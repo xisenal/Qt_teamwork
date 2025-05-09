@@ -17,8 +17,11 @@ public:
     bool initDatabase();
     bool registerUser(const QString &email, const QString &studentId, 
                      const QString &name, const QString &password);
-    bool validateLogin(const QString &email, const QString &password);
+    bool validateLogin(const QString &email, const QString &password, bool &isAdmin);
     bool getUserInfo(const QString &email, QString &studentId, QString &name);
+    QList<QMap<QString, QString>> getAllUsers();
+    bool deleteUser(const QString &email);
+    bool updateUserInfo(const QString &email, const QString &studentId, const QString &name);
 
 private:
     QSqlDatabase db;

@@ -9,6 +9,7 @@
 #include <QTimer>
 #include "usermanager.h"
 #include "emailsender.h"
+#include "adminwindow.h"
 
 class LoginWindow : public QWidget
 {
@@ -20,6 +21,7 @@ public:
 
 signals:
     void loginSuccess();
+    void adminLoginSuccess();
 
 private slots:
     void switchToRegister();
@@ -29,6 +31,8 @@ private slots:
 
 private:
     void setupUI();
+    void openAdminWindow();
+    void openMainWindow();
     void setupLoginPage();
     void setupRegisterPage();
     void setMaterialStyle();

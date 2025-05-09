@@ -67,11 +67,18 @@ bool UserManager::registerUser(const QString &email, const QString &studentId,
     return true;
 }
 
-bool UserManager::validateLogin(const QString &email, const QString &password)
+bool UserManager::validateLogin(const QString &email, const QString &password, bool &isAdmin)
 {
     if (!db.isOpen() && !initDatabase())
         return false;
 
+    // 检查是否是管理员账户
+    if (email == "xlab@xlab.com" && password == "XLab") {
+        isAdmin = true;
+        return true;
+    }
+
+    isAdmin = false;
     QSqlQuery query;
     query.prepare("SELECT password FROM users WHERE email = ?");
     query.addBindValue(email);
@@ -85,6 +92,67 @@ bool UserManager::validateLogin(const QString &email, const QString &password)
         password.toUtf8(), QCryptographicHash::Sha256).toHex());
 
     return storedHash == inputHash;
+}
+
+QList<QMap<QString, QString>> UserManager::getAllUsers()
+{
+    QList<QMap<QString, QString>> userList;
+    if (!db.isOpen() && !initDatabase())
+        return userList;
+
+    QSqlQuery query;
+    query.prepare("SELECT email, student_id, name FROM users");
+
+    if (!query.exec()) {
+        qDebug() << "Error: Failed to get users" << query.lastError();
+        return userList;
+    }
+
+    while (query.next()) {
+        QMap<QString, QString> user;
+        user["email"] = query.value(0).toString();
+        user["student_id"] = query.value(1).toString();
+        user["name"] = query.value(2).toString();
+        userList.append(user);
+    }
+
+    return userList;
+}
+
+bool UserManager::deleteUser(const QString &email)
+{
+    if (!db.isOpen() && !initDatabase())
+        return false;
+
+    QSqlQuery query;
+    query.prepare("DELETE FROM users WHERE email = ?");
+    query.addBindValue(email);
+
+    if (!query.exec()) {
+        qDebug() << "Error: Failed to delete user" << query.lastError();
+        return false;
+    }
+
+    return true;
+}
+
+bool UserManager::updateUserInfo(const QString &email, const QString &studentId, const QString &name)
+{
+    if (!db.isOpen() && !initDatabase())
+        return false;
+
+    QSqlQuery query;
+    query.prepare("UPDATE users SET student_id = ?, name = ? WHERE email = ?");
+    query.addBindValue(studentId);
+    query.addBindValue(name);
+    query.addBindValue(email);
+
+    if (!query.exec()) {
+        qDebug() << "Error: Failed to update user info" << query.lastError();
+        return false;
+    }
+
+    return true;
 }
 
 bool UserManager::getUserInfo(const QString &email, QString &studentId, QString &name)

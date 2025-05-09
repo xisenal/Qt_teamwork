@@ -1,4 +1,5 @@
 #include "loginwindow.h"
+#include "adminwindow.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QMessageBox>
@@ -197,6 +198,18 @@ void LoginWindow::setMaterialStyle()
     switchToLoginLabel->setStyleSheet(labelStyle);
 }
 
+void LoginWindow::openAdminWindow()
+{
+    AdminWindow *adminWindow = new AdminWindow;
+    adminWindow->show();
+    emit adminLoginSuccess();
+}
+
+void LoginWindow::openMainWindow()
+{
+    emit loginSuccess();
+}
+
 void LoginWindow::switchToRegister()
 {
     stackedWidget->setCurrentWidget(registerPage);
@@ -213,12 +226,17 @@ void LoginWindow::handleLogin()
     QString password = loginPasswordInput->text();
 
     if (email.isEmpty() || password.isEmpty()) {
-        QMessageBox::warning(this, "提示", "请填写完整的登录信息");
+        QMessageBox::warning(this, "提示", "请输入邮箱和密码");
         return;
     }
 
-    if (userManager->validateLogin(email, password)) {
-        emit loginSuccess();
+    bool isAdmin = false;
+    if (userManager->validateLogin(email, password, isAdmin)) {
+        if (isAdmin) {
+            openAdminWindow();
+        } else {
+            openMainWindow();
+        }
         close();
     } else {
         QMessageBox::warning(this, "错误", "邮箱或密码错误");
