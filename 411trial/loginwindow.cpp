@@ -8,6 +8,7 @@
 LoginWindow::LoginWindow(QWidget *parent)
     : QWidget(parent)
     , userManager(new UserManager(this))
+    , emailSender(new EmailSender(this))
 {
     setupUI();
     setMaterialStyle();
@@ -96,6 +97,14 @@ void LoginWindow::setupRegisterPage()
     registerConfirmPasswordInput->setPlaceholderText("确认密码");
     registerConfirmPasswordInput->setEchoMode(QLineEdit::Password);
 
+    QHBoxLayout *verificationLayout = new QHBoxLayout;
+    verificationCodeInput = new QLineEdit;
+    verificationCodeInput->setPlaceholderText("验证码");
+    verificationCodeInput->setMaxLength(6);
+    sendVerificationButton = new QPushButton("发送验证码");
+    verificationLayout->addWidget(verificationCodeInput);
+    verificationLayout->addWidget(sendVerificationButton);
+
     registerButton = new QPushButton("注册");
 
     switchToLoginLabel = new QLabel("已有账号？<a href=\"#\">返回登录</a>");
@@ -107,12 +116,29 @@ void LoginWindow::setupRegisterPage()
     layout->addWidget(registerEmailInput);
     layout->addWidget(registerPasswordInput);
     layout->addWidget(registerConfirmPasswordInput);
+    layout->addLayout(verificationLayout);
     layout->addWidget(registerButton);
     layout->addWidget(switchToLoginLabel);
     layout->addStretch();
 
     connect(switchToLoginLabel, &QLabel::linkActivated, this, &LoginWindow::switchToLogin);
     connect(registerButton, &QPushButton::clicked, this, &LoginWindow::handleRegister);
+    connect(sendVerificationButton, &QPushButton::clicked, this, [this]() {
+        QString email = registerEmailInput->text();
+        if (email.isEmpty()) {
+            QMessageBox::warning(this, "提示", "请输入邮箱地址");
+            return;
+        }
+        if (emailSender->sendVerificationCode(email, currentVerificationCode)) {
+            QMessageBox::information(this, "成功", "验证码已发送到您的邮箱");
+            sendVerificationButton->setEnabled(false);
+            QTimer::singleShot(60000, this, [this]() {
+                sendVerificationButton->setEnabled(true);
+            });
+        } else {
+            QMessageBox::warning(this, "错误", "验证码发送失败，请稍后重试");
+        }
+    });
 }
 
 void LoginWindow::setMaterialStyle()
@@ -205,8 +231,13 @@ void LoginWindow::handleRegister()
     QString password = registerPasswordInput->text();
     QString confirmPassword = registerConfirmPasswordInput->text();
 
-    if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+    if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || verificationCodeInput->text().isEmpty()) {
         QMessageBox::warning(this, "提示", "请填写完整的注册信息");
+        return;
+    }
+
+    if (verificationCodeInput->text() != currentVerificationCode) {
+        QMessageBox::warning(this, "提示", "验证码错误");
         return;
     }
 

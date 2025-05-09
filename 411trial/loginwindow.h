@@ -6,7 +6,9 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QLabel>
+#include <QTimer>
 #include "usermanager.h"
+#include "emailsender.h"
 
 class LoginWindow : public QWidget
 {
@@ -45,10 +47,14 @@ private:
     QLineEdit *registerEmailInput;
     QLineEdit *registerPasswordInput;
     QLineEdit *registerConfirmPasswordInput;
+    QLineEdit *verificationCodeInput;
     QPushButton *registerButton;
+    QPushButton *sendVerificationButton;
     QLabel *switchToLoginLabel;
+    QString currentVerificationCode;
 
     UserManager *userManager;
+    EmailSender *emailSender;
 };
 
 #endif // LOGINWINDOW_H

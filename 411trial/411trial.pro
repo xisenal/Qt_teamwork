@@ -1,4 +1,4 @@
-QT       += core gui sql
+QT       += core gui sql network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -15,12 +15,14 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     loginwindow.cpp \
-    usermanager.cpp
+    usermanager.cpp \
+    emailsender.cpp
 
 HEADERS += \
     mainwindow.h \
     loginwindow.h \
-    usermanager.h
+    usermanager.h \
+    emailsender.h
 
 FORMS += \
     mainwindow.ui
