@@ -1,0 +1,10 @@
+<RCC>
+  <qresource prefix="/">
+    <file>resources/menu.png</file>
+    <file>resources/home.png</file>
+    <file>resources/lab.png</file>
+    <file>resources/tasks.png</file>
+    <file>resources/profile.png</file>
+    <file>resources/avatar.png</file>
+  </qresource>
+</RCC>
