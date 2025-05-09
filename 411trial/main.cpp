@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "loginwindow.h"
 
 #include <QApplication>
 #include <QLocale>
@@ -17,7 +18,13 @@ int main(int argc, char *argv[])
             break;
         }
     }
-    MainWindow w;
-    w.show();
+    LoginWindow *loginWindow = new LoginWindow();
+    MainWindow *mainWindow = new MainWindow();
+
+    QObject::connect(loginWindow, &LoginWindow::loginSuccess, [=]() {
+        mainWindow->show();
+    });
+
+    loginWindow->show();
     return a.exec();
 }
