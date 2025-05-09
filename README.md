@@ -19,7 +19,7 @@ git stash drop # 删除最近的stash
 
 账户：xlabmailsystem@163.com
 
-密码：XLabMail2025
+密码：看群吧
 
 ### 管理员账户
 
