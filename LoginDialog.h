@@ -13,14 +13,18 @@ public:
     QString getNickname() const { return nicknameEdit->text(); }
     QString getEmail() const { return emailEdit->text(); }
     QString getPassword() const { return passwordEdit->text(); }
+    QString getStudentId() const { return studentIdEdit->text(); }
 
 public slots:
     void switchToLogin();
     void switchToRegister();
 
 private:
+    void validateAndAccept();
+    
     QStackedWidget *stack;
     QLineEdit *nicknameEdit;
     QLineEdit *emailEdit;
     QLineEdit *passwordEdit;
+    QLineEdit *studentIdEdit;
 };

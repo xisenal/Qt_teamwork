@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 侧边栏初始化
     sidebar = new QWidget(this);
-    sidebar->setStyleSheet("background-color: #f8f8d9;"); //米黄色
+    sidebar->setStyleSheet("background-color: #FFFFFF; border-right: 1px solid #E0E0E0;"); // Material Design风格的白色背景和边框
     sidebar->setFixedWidth(expandedWidth);
 
     // 带图标的切换按钮
@@ -21,12 +21,18 @@ MainWindow::MainWindow(QWidget *parent)
     toggleBtn->setIconSize(QSize(32, 32));
     toggleBtn->setStyleSheet(
         "QPushButton {"
-        "   background-color: #f8f8d9;"
+        "   background-color: transparent;"
         "   border: none;"
         "   border-radius: 8px;"
         "   padding: 8px;"
+        "   color: #757575;"
         "}"
-        "QPushButton:hover { background-color: #dd9386; }");  //淡红
+        "QPushButton:hover {"
+        "   background-color: rgba(0, 0, 0, 0.04);"
+        "}"
+        "QPushButton:pressed {"
+        "   background-color: rgba(0, 0, 0, 0.08);"
+        "}");
 
     // 导航按钮配置
     QVBoxLayout *navLayout = new QVBoxLayout(sidebar);
@@ -50,17 +56,25 @@ MainWindow::MainWindow(QWidget *parent)
         btn->setIconSize(QSize(32, 32));
         btn->setStyleSheet(
             "QPushButton {"
-            "   color: black;"
-            "   text-align: center;"      // 改为居中
-            "   font-size: 15px;"         // 新增字体大小设置
+            "   color: #424242;"
             "   text-align: left;"
-            "   padding: 12px 15px;"
-            "   border-radius: 6px;"
+            "   font-size: 14px;"
+            "   font-weight: 500;"
+            "   padding: 12px 16px;"
+            "   border-radius: 4px;"
             "   background-color: transparent;"
-            "   spacing: 15px;"  // 图标文字间距
+            "   spacing: 12px;"
             "}"
             "QPushButton:hover {"
-            "   background-color: #b0e6e9;"   //天蓝
+            "   background-color: rgba(0, 0, 0, 0.04);"
+            "   color: #1976D2;"
+            "}"
+            "QPushButton:pressed {"
+            "   background-color: rgba(0, 0, 0, 0.08);"
+            "}"
+            "QPushButton:checked {"
+            "   color: #1976D2;"
+            "   background-color: #E3F2FD;"
             "}");
         btn->setFixedHeight(50);
         navLayout->addWidget(btn);
@@ -71,7 +85,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 内容区域
     QTextEdit *contentArea = new QTextEdit(this);
-    contentArea->setStyleSheet("font-size: 60px; padding: 20px;");
+    contentArea->setStyleSheet(
+        "QTextEdit {"
+        "   background-color: #FAFAFA;"
+        "   border: none;"
+        "   font-size: 14px;"
+        "   padding: 24px;"
+        "   color: #212121;"
+        "}");
 
     // 主布局
     QHBoxLayout *mainLayout = new QHBoxLayout();
@@ -114,7 +135,7 @@ MainWindow::MainWindow(QWidget *parent)
     // 昵称标签
     QLabel *username = new QLabel("Jam", userInfoBox);
     username->setAlignment(Qt::AlignCenter);
-    username->setStyleSheet("color:#666; font-size:18px;");
+    username->setStyleSheet("color: #424242; font-size: 16px; font-weight: 500;");
 
     // 组装用户信息
     userLayout->addWidget(avatar);
