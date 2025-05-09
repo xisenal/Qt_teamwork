@@ -43,9 +43,8 @@ private:
 
     // Register page widgets
     QLineEdit *registerEmailInput;
-    QLineEdit *registerStudentIdInput;
-    QLineEdit *registerNameInput;
     QLineEdit *registerPasswordInput;
+    QLineEdit *registerConfirmPasswordInput;
     QPushButton *registerButton;
     QLabel *switchToLoginLabel;
 

@@ -88,17 +88,13 @@ void LoginWindow::setupRegisterPage()
     registerEmailInput->setValidator(new QRegularExpressionValidator(
         QRegularExpression("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"), this));
 
-    registerStudentIdInput = new QLineEdit;
-    registerStudentIdInput->setPlaceholderText("学号");
-    registerStudentIdInput->setValidator(new QRegularExpressionValidator(
-        QRegularExpression("\\d+"), this));
-
-    registerNameInput = new QLineEdit;
-    registerNameInput->setPlaceholderText("姓名");
-
     registerPasswordInput = new QLineEdit;
     registerPasswordInput->setPlaceholderText("密码");
     registerPasswordInput->setEchoMode(QLineEdit::Password);
+
+    registerConfirmPasswordInput = new QLineEdit;
+    registerConfirmPasswordInput->setPlaceholderText("确认密码");
+    registerConfirmPasswordInput->setEchoMode(QLineEdit::Password);
 
     registerButton = new QPushButton("注册");
 
@@ -109,9 +105,8 @@ void LoginWindow::setupRegisterPage()
 
     layout->addWidget(titleLabel);
     layout->addWidget(registerEmailInput);
-    layout->addWidget(registerStudentIdInput);
-    layout->addWidget(registerNameInput);
     layout->addWidget(registerPasswordInput);
+    layout->addWidget(registerConfirmPasswordInput);
     layout->addWidget(registerButton);
     layout->addWidget(switchToLoginLabel);
     layout->addStretch();
@@ -166,9 +161,8 @@ void LoginWindow::setMaterialStyle()
     loginEmailInput->setStyleSheet(inputStyle);
     loginPasswordInput->setStyleSheet(inputStyle);
     registerEmailInput->setStyleSheet(inputStyle);
-    registerStudentIdInput->setStyleSheet(inputStyle);
-    registerNameInput->setStyleSheet(inputStyle);
     registerPasswordInput->setStyleSheet(inputStyle);
+    registerConfirmPasswordInput->setStyleSheet(inputStyle);
 
     loginButton->setStyleSheet(buttonStyle);
     registerButton->setStyleSheet(buttonStyle);
@@ -208,23 +202,29 @@ void LoginWindow::handleLogin()
 void LoginWindow::handleRegister()
 {
     QString email = registerEmailInput->text();
-    QString studentId = registerStudentIdInput->text();
-    QString name = registerNameInput->text();
     QString password = registerPasswordInput->text();
+    QString confirmPassword = registerConfirmPasswordInput->text();
 
-    if (email.isEmpty() || studentId.isEmpty() || 
-        name.isEmpty() || password.isEmpty()) {
+    if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
         QMessageBox::warning(this, "提示", "请填写完整的注册信息");
         return;
     }
 
-    if (userManager->registerUser(email, studentId, name, password)) {
+    if (password != confirmPassword) {
+        QMessageBox::warning(this, "提示", "两次输入的密码不一致");
+        return;
+    }
+
+    // 使用默认值作为学号和姓名
+    QString defaultStudentId = "未设置";
+    QString defaultName = "未设置";
+
+    if (userManager->registerUser(email, defaultStudentId, defaultName, password)) {
         QMessageBox::information(this, "成功", "注册成功，请登录");
         switchToLogin();
         registerEmailInput->clear();
-        registerStudentIdInput->clear();
-        registerNameInput->clear();
         registerPasswordInput->clear();
+        registerConfirmPasswordInput->clear();
     } else {
         QMessageBox::warning(this, "错误", "注册失败，该邮箱可能已被注册");
     }
