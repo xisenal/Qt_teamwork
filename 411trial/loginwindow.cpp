@@ -66,7 +66,11 @@ void LoginWindow::setupLoginPage()
     layout->addWidget(titleLabel);
     layout->addWidget(loginEmailInput);
     layout->addWidget(loginPasswordInput);
+    loginAgreementCheckBox = new QCheckBox("我已阅读并同意用户协议", this);
+    loginAgreementCheckBox->setStyleSheet("QCheckBox { color: #666; font-size: 13px; }");
+
     layout->addWidget(loginButton);
+    layout->addWidget(loginAgreementCheckBox);
     layout->addWidget(switchToRegisterLabel);
     layout->addStretch();
 
@@ -118,7 +122,11 @@ void LoginWindow::setupRegisterPage()
     layout->addWidget(registerPasswordInput);
     layout->addWidget(registerConfirmPasswordInput);
     layout->addLayout(verificationLayout);
+    registerAgreementCheckBox = new QCheckBox("我已阅读并同意用户协议", this);
+    registerAgreementCheckBox->setStyleSheet("QCheckBox { color: #666; font-size: 13px; }");
+
     layout->addWidget(registerButton);
+    layout->addWidget(registerAgreementCheckBox);
     layout->addWidget(switchToLoginLabel);
     layout->addStretch();
 
@@ -230,6 +238,11 @@ void LoginWindow::handleLogin()
         return;
     }
 
+    if (!loginAgreementCheckBox->isChecked()) {
+        QMessageBox::warning(this, "提示", "请阅读并同意用户协议");
+        return;
+    }
+
     bool isAdmin = false;
     if (userManager->validateLogin(email, password, isAdmin)) {
         if (isAdmin) {
@@ -251,6 +264,11 @@ void LoginWindow::handleRegister()
 
     if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || verificationCodeInput->text().isEmpty()) {
         QMessageBox::warning(this, "提示", "请填写完整的注册信息");
+        return;
+    }
+
+    if (!registerAgreementCheckBox->isChecked()) {
+        QMessageBox::warning(this, "提示", "请阅读并同意用户协议");
         return;
     }
 

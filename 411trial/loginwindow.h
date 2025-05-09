@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QTimer>
+#include <QCheckBox>
 #include "usermanager.h"
 #include "emailsender.h"
 #include "adminwindow.h"
@@ -46,6 +47,7 @@ private:
     QLineEdit *loginPasswordInput;
     QPushButton *loginButton;
     QLabel *switchToRegisterLabel;
+    QCheckBox *loginAgreementCheckBox;
 
     // Register page widgets
     QLineEdit *registerEmailInput;
@@ -55,6 +57,7 @@ private:
     QPushButton *registerButton;
     QPushButton *sendVerificationButton;
     QLabel *switchToLoginLabel;
+    QCheckBox *registerAgreementCheckBox;
     QString currentVerificationCode;
 
     UserManager *userManager;
