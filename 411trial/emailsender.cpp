@@ -27,7 +27,7 @@ bool EmailSender::sendVerificationCode(const QString &recipientEmail, QString &v
 {
     verificationCode = generateVerificationCode();
     QString subject = "验证码 - XLab邮箱验证";
-    QString body = QString("您的验证码是: %1\n\n此验证码将在10分钟内有效。\n如果这不是您的操作，请忽略此邮件。").arg(verificationCode);
+    QString body = QString("欢迎加入X-Lab!您的验证码是: %1\n\n此验证码将在10分钟内有效。拒绝成为牛马，领先世界一亿年！导师再也不用担心你摸鱼了qwq（\n如果这不是您的操作，请忽略此邮件。").arg(verificationCode);
 
     return sendEmail(recipientEmail, subject, body);
 }
