@@ -27,8 +27,10 @@ signals:
 private slots:
     void switchToRegister();
     void switchToLogin();
+    void switchToResetPassword();
     void handleLogin();
     void handleRegister();
+    void handleResetPassword();
     void showAgreementDialog();
 
 private:
@@ -37,11 +39,13 @@ private:
     void openMainWindow();
     void setupLoginPage();
     void setupRegisterPage();
+    void setupResetPasswordPage();
     void setMaterialStyle();
 
     QStackedWidget *stackedWidget;
     QWidget *loginPage;
     QWidget *registerPage;
+    QWidget *resetPasswordPage;
 
     // Login page widgets
     QLineEdit *loginEmailInput;
@@ -60,6 +64,16 @@ private:
     QLabel *switchToLoginLabel;
     QCheckBox *registerAgreementCheckBox;
     QString currentVerificationCode;
+
+    // Reset password page widgets
+    QLineEdit *resetEmailInput;
+    QLineEdit *resetVerificationCodeInput;
+    QLineEdit *resetPasswordInput;
+    QLineEdit *resetConfirmPasswordInput;
+    QPushButton *resetSendVerificationButton;
+    QPushButton *resetPasswordButton;
+    QLabel *resetSwitchToLoginLabel;
+    QString resetVerificationCode;
 
     UserManager *userManager;
     EmailSender *emailSender;

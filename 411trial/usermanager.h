@@ -22,6 +22,7 @@ public:
     QList<QMap<QString, QString>> getAllUsers();
     bool deleteUser(const QString &email);
     bool updateUserInfo(const QString &email, const QString &studentId, const QString &name);
+    bool resetPassword(const QString &email, const QString &newPassword);
 
 private:
     QSqlDatabase db;

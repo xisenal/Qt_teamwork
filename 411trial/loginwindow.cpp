@@ -32,9 +32,11 @@ void LoginWindow::setupUI()
 
     setupLoginPage();
     setupRegisterPage();
+    setupResetPasswordPage();
 
     stackedWidget->addWidget(loginPage);
     stackedWidget->addWidget(registerPage);
+    stackedWidget->addWidget(resetPasswordPage);
 }
 
 void LoginWindow::setupLoginPage()
@@ -79,13 +81,21 @@ void LoginWindow::setupLoginPage()
     loginAgreementLayout->addWidget(loginAgreementLink);
     loginAgreementCheckBox->setStyleSheet("QCheckBox { color: #666; font-size: 13px; }");
 
+    QLabel *forgotPasswordLabel = new QLabel("<a href=\"#\">忘记密码？</a>");
+    forgotPasswordLabel->setAlignment(Qt::AlignCenter);
+    forgotPasswordLabel->setTextFormat(Qt::RichText);
+    forgotPasswordLabel->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
+    forgotPasswordLabel->setStyleSheet("QLabel { color: #666; font-size: 13px; }");
+
     layout->addWidget(loginButton);
     layout->addLayout(loginAgreementLayout);
+    layout->addWidget(forgotPasswordLabel);
     layout->addWidget(switchToRegisterLabel);
     layout->addStretch();
 
     connect(switchToRegisterLabel, &QLabel::linkActivated, this, &LoginWindow::switchToRegister);
     connect(loginButton, &QPushButton::clicked, this, &LoginWindow::handleLogin);
+    connect(forgotPasswordLabel, &QLabel::linkActivated, this, &LoginWindow::switchToResetPassword);
 }
 
 void LoginWindow::setupRegisterPage()
@@ -167,6 +177,113 @@ void LoginWindow::setupRegisterPage()
             QMessageBox::warning(this, "错误", "验证码发送失败，请稍后重试");
         }
     });
+}
+
+void LoginWindow::setupResetPasswordPage()
+{
+    resetPasswordPage = new QWidget;
+    QVBoxLayout *layout = new QVBoxLayout(resetPasswordPage);
+    layout->setSpacing(20);
+    layout->setContentsMargins(40, 40, 40, 40);
+
+    QLabel *titleLabel = new QLabel("重置密码");
+    titleLabel->setAlignment(Qt::AlignCenter);
+    titleLabel->setStyleSheet("font-size: 24px; color: #333; margin-bottom: 20px;");
+
+    resetEmailInput = new QLineEdit;
+    resetEmailInput->setPlaceholderText("邮箱");
+    resetEmailInput->setValidator(new QRegularExpressionValidator(
+        QRegularExpression("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"), this));
+
+    QHBoxLayout *verificationLayout = new QHBoxLayout;
+    resetVerificationCodeInput = new QLineEdit;
+    resetVerificationCodeInput->setPlaceholderText("验证码");
+    resetVerificationCodeInput->setMaxLength(6);
+    resetSendVerificationButton = new QPushButton("发送验证码");
+    verificationLayout->addWidget(resetVerificationCodeInput);
+    verificationLayout->addWidget(resetSendVerificationButton);
+
+    resetPasswordInput = new QLineEdit;
+    resetPasswordInput->setPlaceholderText("新密码");
+    resetPasswordInput->setEchoMode(QLineEdit::Password);
+
+    resetConfirmPasswordInput = new QLineEdit;
+    resetConfirmPasswordInput->setPlaceholderText("确认新密码");
+    resetConfirmPasswordInput->setEchoMode(QLineEdit::Password);
+
+    resetPasswordButton = new QPushButton("重置密码");
+
+    resetSwitchToLoginLabel = new QLabel("<a href=\"#\">返回登录</a>");
+    resetSwitchToLoginLabel->setAlignment(Qt::AlignCenter);
+    resetSwitchToLoginLabel->setTextFormat(Qt::RichText);
+    resetSwitchToLoginLabel->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
+
+    layout->addWidget(titleLabel);
+    layout->addWidget(resetEmailInput);
+    layout->addLayout(verificationLayout);
+    layout->addWidget(resetPasswordInput);
+    layout->addWidget(resetConfirmPasswordInput);
+    layout->addWidget(resetPasswordButton);
+    layout->addWidget(resetSwitchToLoginLabel);
+    layout->addStretch();
+
+    connect(resetSwitchToLoginLabel, &QLabel::linkActivated, this, &LoginWindow::switchToLogin);
+    connect(resetPasswordButton, &QPushButton::clicked, this, &LoginWindow::handleResetPassword);
+    connect(resetSendVerificationButton, &QPushButton::clicked, this, [this]() {
+        QString email = resetEmailInput->text();
+        if (email.isEmpty()) {
+            QMessageBox::warning(this, "提示", "请输入邮箱地址");
+            return;
+        }
+        if (emailSender->sendVerificationCode(email, resetVerificationCode)) {
+            QMessageBox::information(this, "成功", "验证码已发送到您的邮箱");
+            resetSendVerificationButton->setEnabled(false);
+            QTimer::singleShot(60000, this, [this]() {
+                resetSendVerificationButton->setEnabled(true);
+            });
+        } else {
+            QMessageBox::warning(this, "错误", "验证码发送失败，请稍后重试");
+        }
+    });
+}
+
+void LoginWindow::switchToResetPassword()
+{
+    stackedWidget->setCurrentWidget(resetPasswordPage);
+}
+
+void LoginWindow::handleResetPassword()
+{
+    QString email = resetEmailInput->text();
+    QString verificationCode = resetVerificationCodeInput->text();
+    QString newPassword = resetPasswordInput->text();
+    QString confirmPassword = resetConfirmPasswordInput->text();
+
+    if (email.isEmpty() || verificationCode.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
+        QMessageBox::warning(this, "提示", "请填写完整信息");
+        return;
+    }
+
+    if (verificationCode != resetVerificationCode) {
+        QMessageBox::warning(this, "提示", "验证码错误");
+        return;
+    }
+
+    if (newPassword != confirmPassword) {
+        QMessageBox::warning(this, "提示", "两次输入的密码不一致");
+        return;
+    }
+
+    if (userManager->resetPassword(email, newPassword)) {
+        QMessageBox::information(this, "成功", "密码重置成功，请使用新密码登录");
+        switchToLogin();
+        resetEmailInput->clear();
+        resetVerificationCodeInput->clear();
+        resetPasswordInput->clear();
+        resetConfirmPasswordInput->clear();
+    } else {
+        QMessageBox::warning(this, "错误", "密码重置失败，请稍后重试");
+    }
 }
 
 void LoginWindow::showAgreementDialog()

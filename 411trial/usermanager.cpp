@@ -172,3 +172,26 @@ bool UserManager::getUserInfo(const QString &email, QString &studentId, QString 
     name = query.value(1).toString();
     return true;
 }
+
+bool UserManager::resetPassword(const QString &email, const QString &newPassword)
+{
+    if (!db.isOpen() && !initDatabase())
+        return false;
+
+    QSqlQuery query;
+    query.prepare("UPDATE users SET password = ? WHERE email = ?");
+
+    // Hash the new password before storing
+    QString hashedPassword = QString(QCryptographicHash::hash(
+        newPassword.toUtf8(), QCryptographicHash::Sha256).toHex());
+
+    query.addBindValue(hashedPassword);
+    query.addBindValue(email);
+
+    if (!query.exec()) {
+        qDebug() << "Error: Failed to reset password" << query.lastError();
+        return false;
+    }
+
+    return true;
+}

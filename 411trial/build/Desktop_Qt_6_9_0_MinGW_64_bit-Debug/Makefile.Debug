@@ -596,6 +596,8 @@ debug/moc_loginwindow.cpp: ../../loginwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtGui/qpicture.h \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QTimer \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/qtimer.h \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/QCheckBox \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qcheckbox.h \
 		../../usermanager.h \
 		C:/Qt/6.9.0/mingw_64/include/QtSql/QSqlDatabase \
 		C:/Qt/6.9.0/mingw_64/include/QtSql/qsqldatabase.h \
@@ -1442,6 +1444,8 @@ debug/main.o: ../../main.cpp ../../mainwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtGui/qpicture.h \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QTimer \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/qtimer.h \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/QCheckBox \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qcheckbox.h \
 		../../usermanager.h \
 		C:/Qt/6.9.0/mingw_64/include/QtSql/QSqlDatabase \
 		C:/Qt/6.9.0/mingw_64/include/QtSql/qsqldatabase.h \
@@ -1943,6 +1947,8 @@ debug/loginwindow.o: ../../loginwindow.cpp ../../loginwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtGui/qpicture.h \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QTimer \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/qtimer.h \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/QCheckBox \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qcheckbox.h \
 		../../usermanager.h \
 		C:/Qt/6.9.0/mingw_64/include/QtSql/QSqlDatabase \
 		C:/Qt/6.9.0/mingw_64/include/QtSql/qsqldatabase.h \
@@ -2007,7 +2013,9 @@ debug/loginwindow.o: ../../loginwindow.cpp ../../loginwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qdialog.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qdialogbuttonbox.h \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QRegularExpression \
-		C:/Qt/6.9.0/mingw_64/include/QtGui/QRegularExpressionValidator
+		C:/Qt/6.9.0/mingw_64/include/QtGui/QRegularExpressionValidator \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/QTextEdit \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qtextedit.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\loginwindow.o ..\..\loginwindow.cpp
 
 debug/usermanager.o: ../../usermanager.cpp ../../usermanager.h \
