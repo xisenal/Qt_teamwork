@@ -29,6 +29,7 @@ private slots:
     void switchToLogin();
     void handleLogin();
     void handleRegister();
+    void showAgreementDialog();
 
 private:
     void setupUI();

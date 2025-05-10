@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
+#include <QTextEdit>
 
 LoginWindow::LoginWindow(QWidget *parent)
     : QWidget(parent)
@@ -66,11 +67,20 @@ void LoginWindow::setupLoginPage()
     layout->addWidget(titleLabel);
     layout->addWidget(loginEmailInput);
     layout->addWidget(loginPasswordInput);
-    loginAgreementCheckBox = new QCheckBox("我已阅读并同意用户协议", this);
+    QHBoxLayout *loginAgreementLayout = new QHBoxLayout;
+    loginAgreementLayout->setAlignment(Qt::AlignCenter);
+    loginAgreementCheckBox = new QCheckBox("我已阅读并同意", this);
+    QLabel *loginAgreementLink = new QLabel("<a href=\"#\">《用户协议》</a>");
+    loginAgreementLink->setTextFormat(Qt::RichText);
+    loginAgreementLink->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
+    loginAgreementLink->setStyleSheet("QLabel { color: #2196F3; }");
+    connect(loginAgreementLink, &QLabel::linkActivated, this, &LoginWindow::showAgreementDialog);
+    loginAgreementLayout->addWidget(loginAgreementCheckBox);
+    loginAgreementLayout->addWidget(loginAgreementLink);
     loginAgreementCheckBox->setStyleSheet("QCheckBox { color: #666; font-size: 13px; }");
 
     layout->addWidget(loginButton);
-    layout->addWidget(loginAgreementCheckBox);
+    layout->addLayout(loginAgreementLayout);
     layout->addWidget(switchToRegisterLabel);
     layout->addStretch();
 
@@ -122,11 +132,20 @@ void LoginWindow::setupRegisterPage()
     layout->addWidget(registerPasswordInput);
     layout->addWidget(registerConfirmPasswordInput);
     layout->addLayout(verificationLayout);
-    registerAgreementCheckBox = new QCheckBox("我已阅读并同意用户协议", this);
+    QHBoxLayout *registerAgreementLayout = new QHBoxLayout;
+    registerAgreementLayout->setAlignment(Qt::AlignCenter);
+    registerAgreementCheckBox = new QCheckBox("我已阅读并同意", this);
+    QLabel *registerAgreementLink = new QLabel("<a href=\"#\">《用户协议》</a>");
+    registerAgreementLink->setTextFormat(Qt::RichText);
+    registerAgreementLink->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
+    registerAgreementLink->setStyleSheet("QLabel { color: #2196F3; }");
+    connect(registerAgreementLink, &QLabel::linkActivated, this, &LoginWindow::showAgreementDialog);
+    registerAgreementLayout->addWidget(registerAgreementCheckBox);
+    registerAgreementLayout->addWidget(registerAgreementLink);
     registerAgreementCheckBox->setStyleSheet("QCheckBox { color: #666; font-size: 13px; }");
 
     layout->addWidget(registerButton);
-    layout->addWidget(registerAgreementCheckBox);
+    layout->addLayout(registerAgreementLayout);
     layout->addWidget(switchToLoginLabel);
     layout->addStretch();
 
@@ -148,6 +167,67 @@ void LoginWindow::setupRegisterPage()
             QMessageBox::warning(this, "错误", "验证码发送失败，请稍后重试");
         }
     });
+}
+
+void LoginWindow::showAgreementDialog()
+{
+    QDialog *dialog = new QDialog(this);
+    dialog->setWindowTitle("用户协议");
+    dialog->setFixedSize(600, 400);
+
+    QVBoxLayout *layout = new QVBoxLayout(dialog);
+    QTextEdit *textEdit = new QTextEdit(dialog);
+    textEdit->setReadOnly(true);
+    textEdit->setStyleSheet("QTextEdit { background-color: white; padding: 10px; }");
+
+    QString agreementText = 
+        "用户协议\n\n"
+        "1. 协议的接受\n"
+        "   通过注册或使用本软件，即表示您同意遵守本协议的所有条款和条件。\n\n"
+        "2. 用户责任\n"
+        "   2.1 您应当遵守中华人民共和国相关法律法规。\n"
+        "   2.2 您应当妥善保管账号和密码，对账号下的所有活动负责。\n"
+        "   2.3 您不得利用本软件从事任何违法或不当行为。\n\n"
+        "3. 隐私保护\n"
+        "   3.1 我们重视用户的隐私保护，将依法保护用户的个人信息。\n"
+        "   3.2 未经您的同意，我们不会向第三方披露您的个人信息。\n\n"
+        "4. 服务内容\n"
+        "   4.1 本软件提供的服务内容包括但不限于：用户注册、登录等基本功能。\n"
+        "   4.2 我们保留随时修改或中断服务的权利。\n\n"
+        "5. 知识产权\n"
+        "   5.1 本软件的所有权利均归开发者所有。\n"
+        "   5.2 未经授权，用户不得复制、修改、传播或使用本软件的任何内容。\n\n"
+        "6. 免责声明\n"
+        "   6.1 对于因不可抗力导致的服务中断或损失，我们不承担责任。\n"
+        "   6.2 用户因违反本协议造成的任何损失由用户自行承担。\n\n"
+        "7. 协议修改\n"
+        "   我们保留随时修改本协议的权利，修改后的协议将在软件中公布。";
+
+    textEdit->setText(agreementText);
+    layout->addWidget(textEdit);
+
+    QPushButton *closeButton = new QPushButton("关闭", dialog);
+    closeButton->setStyleSheet(
+        "QPushButton {"
+        "    background-color: #2196F3;"
+        "    color: white;"
+        "    border: none;"
+        "    border-radius: 4px;"
+        "    padding: 8px 16px;"
+        "    font-size: 14px;"
+        "}"
+        "QPushButton:hover {"
+        "    background-color: #1976D2;"
+        "}");
+    connect(closeButton, &QPushButton::clicked, dialog, &QDialog::accept);
+
+    QHBoxLayout *buttonLayout = new QHBoxLayout;
+    buttonLayout->addStretch();
+    buttonLayout->addWidget(closeButton);
+    layout->addLayout(buttonLayout);
+
+    dialog->exec();
+    dialog->deleteLater();
 }
 
 void LoginWindow::setMaterialStyle()
