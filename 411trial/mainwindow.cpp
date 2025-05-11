@@ -7,8 +7,74 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    // 设置无边框窗口
+    setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    setAttribute(Qt::WA_TranslucentBackground);
+
     // 主窗口设置
     setMinimumSize(1024, 768);
+
+    // 创建标题栏
+    QWidget *titleBar = new QWidget(this);
+    titleBar->setFixedHeight(40);
+    titleBar->setStyleSheet("background-color: #FFFFFF; border-bottom: 1px solid #E0E0E0;");
+
+    // 创建标题栏按钮
+    pinButton = new QPushButton("📌", titleBar);
+    minButton = new QPushButton("-", titleBar);
+    maxButton = new QPushButton("□", titleBar);
+    closeButton = new QPushButton("×", titleBar);
+
+    // 设置按钮样式
+    QString buttonStyle = 
+        "QPushButton { "
+        "    border: none; "
+        "    font-size: 16px; "
+        "    color: #666; "
+        "    padding: 8px; "
+        "    width: 30px; "
+        "    height: 30px; "
+        "} "
+        "QPushButton:hover { background-color: #e6e6e6; } ";
+
+    pinButton->setStyleSheet(buttonStyle);
+    minButton->setStyleSheet(buttonStyle);
+    maxButton->setStyleSheet(buttonStyle);
+    closeButton->setStyleSheet(buttonStyle + "QPushButton:hover { background-color: #e81123; color: white; }");
+
+    // 连接按钮信号
+    connect(pinButton, &QPushButton::clicked, [this, buttonStyle]() {
+        isPinned = !isPinned;
+        if (isPinned) {
+            setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+            pinButton->setStyleSheet(buttonStyle + "QPushButton { color: #2196F3; }");
+        } else {
+            setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
+            pinButton->setStyleSheet(buttonStyle);
+        }
+        show();
+    });
+    connect(minButton, &QPushButton::clicked, this, &QWidget::showMinimized);
+    connect(maxButton, &QPushButton::clicked, [this]() {
+        if (isMaximized()) {
+            showNormal();
+            maxButton->setText("□");
+        } else {
+            showMaximized();
+            maxButton->setText("❐");
+        }
+    });
+    connect(closeButton, &QPushButton::clicked, this, &QWidget::close);
+
+    // 创建标题栏布局
+    QHBoxLayout *titleLayout = new QHBoxLayout(titleBar);
+    titleLayout->setContentsMargins(10, 0, 10, 0);
+    titleLayout->setSpacing(8);
+    titleLayout->addStretch();
+    titleLayout->addWidget(pinButton);
+    titleLayout->addWidget(minButton);
+    titleLayout->addWidget(maxButton);
+    titleLayout->addWidget(closeButton);
 
     // 侧边栏初始化
     sidebar = new QWidget(this);
@@ -94,16 +160,22 @@ MainWindow::MainWindow(QWidget *parent)
         "   color: #212121;"
         "}");
 
-    // 主布局
-    QHBoxLayout *mainLayout = new QHBoxLayout();
-    mainLayout->addWidget(sidebar);
-    mainLayout->addWidget(contentArea, 1);
-    mainLayout->setContentsMargins(0, 0, 0, 0);
-    mainLayout->setSpacing(0);
-
+    // 创建中央部件和主布局
     QWidget *centralWidget = new QWidget(this);
-    centralWidget->setLayout(mainLayout);
     setCentralWidget(centralWidget);
+    
+    QVBoxLayout *mainVLayout = new QVBoxLayout(centralWidget);
+    mainVLayout->setContentsMargins(0, 0, 0, 0);
+    mainVLayout->setSpacing(0);
+    mainVLayout->addWidget(titleBar);
+    
+    QHBoxLayout *contentLayout = new QHBoxLayout();
+    contentLayout->setContentsMargins(0, 0, 0, 0);
+    contentLayout->setSpacing(0);
+    contentLayout->addWidget(sidebar);
+    contentLayout->addWidget(contentArea, 1);
+    
+    mainVLayout->addLayout(contentLayout, 1);
 
     // 动画配置
     animation = new QPropertyAnimation(sidebar, "minimumWidth");
@@ -145,6 +217,22 @@ MainWindow::MainWindow(QWidget *parent)
     navLayout->addStretch();  // 将用户信息推到最底部
     navLayout->addWidget(userInfoBox);
     navLayout->addWidget(toggleBtn);  // 原toggleBtn位置调整
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        dragPosition = event->globalPos() - frameGeometry().topLeft();
+        event->accept();
+    }
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    if (event->buttons() & Qt::LeftButton && !isMaximized()) {
+        move(event->globalPos() - dragPosition);
+        event->accept();
+    }
 }
 
 void MainWindow::toggleSidebar()
