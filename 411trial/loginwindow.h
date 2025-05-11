@@ -33,6 +33,10 @@ private slots:
     void handleResetPassword();
     void showAgreementDialog();
 
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+
 private:
     void setupUI();
     void openAdminWindow();
@@ -41,6 +45,8 @@ private:
     void setupRegisterPage();
     void setupResetPasswordPage();
     void setMaterialStyle();
+
+    QPoint dragPosition;
 
     QStackedWidget *stackedWidget;
     QWidget *loginPage;

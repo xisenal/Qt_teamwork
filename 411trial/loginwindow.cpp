@@ -6,12 +6,16 @@
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
 #include <QTextEdit>
+#include <QMouseEvent>
+#include <QGraphicsDropShadowEffect>
 
 LoginWindow::LoginWindow(QWidget *parent)
     : QWidget(parent)
     , userManager(new UserManager(this))
     , emailSender(new EmailSender(this))
 {
+    setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    setAttribute(Qt::WA_TranslucentBackground);
     setupUI();
     setMaterialStyle();
     userManager->initDatabase();
@@ -21,14 +25,83 @@ LoginWindow::~LoginWindow()
 {
 }
 
+void LoginWindow::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        dragPosition = event->globalPos() - frameGeometry().topLeft();
+        event->accept();
+    }
+}
+
+void LoginWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    if (event->buttons() & Qt::LeftButton) {
+        move(event->globalPos() - dragPosition);
+        event->accept();
+    }
+}
+
 void LoginWindow::setupUI()
 {
     setFixedSize(400, 500);
     setWindowTitle("登录/注册");
 
-    stackedWidget = new QStackedWidget(this);
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    // 创建一个主容器，用于设置圆角和阴影
+    QWidget *container = new QWidget(this);
+    container->setObjectName("container");
+    container->setStyleSheet("#container { background-color: white; border-radius: 10px; }");
+
+    // 添加阴影效果
+    QGraphicsDropShadowEffect *shadowEffect = new QGraphicsDropShadowEffect(this);
+    shadowEffect->setBlurRadius(20);
+    shadowEffect->setColor(QColor(0, 0, 0, 80));
+    shadowEffect->setOffset(0, 0);
+    container->setGraphicsEffect(shadowEffect);
+
+    // 创建标题栏
+    QWidget *titleBar = new QWidget(container);
+    titleBar->setFixedHeight(40);
+    QHBoxLayout *titleLayout = new QHBoxLayout(titleBar);
+    titleLayout->setContentsMargins(10, 0, 10, 0);
+
+    // 添加标题
+    QLabel *titleLabel = new QLabel("登录/注册", titleBar);
+    titleLabel->setStyleSheet("color: #333; font-size: 14px;");
+
+    // 添加控制按钮
+    QPushButton *minButton = new QPushButton("-", titleBar);
+    QPushButton *closeButton = new QPushButton("×", titleBar);
+    minButton->setFixedSize(30, 30);
+    closeButton->setFixedSize(30, 30);
+    minButton->setStyleSheet(
+        "QPushButton { border: none; font-size: 16px; color: #666; }"
+        "QPushButton:hover { background-color: #e6e6e6; }");
+    closeButton->setStyleSheet(
+        "QPushButton { border: none; font-size: 16px; color: #666; }"
+        "QPushButton:hover { background-color: #e81123; color: white; }");
+
+    titleLayout->addWidget(titleLabel);
+    titleLayout->addStretch();
+    titleLayout->addWidget(minButton);
+    titleLayout->addWidget(closeButton);
+
+    // 连接按钮信号
+    connect(minButton, &QPushButton::clicked, this, &QWidget::showMinimized);
+    connect(closeButton, &QPushButton::clicked, this, &QWidget::close);
+
+    // 设置主布局
+    QVBoxLayout *mainLayout = new QVBoxLayout(container);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
+    mainLayout->setSpacing(0);
+    mainLayout->addWidget(titleBar);
+
+    stackedWidget = new QStackedWidget(container);
     mainLayout->addWidget(stackedWidget);
+
+    // 设置窗口主布局
+    QVBoxLayout *windowLayout = new QVBoxLayout(this);
+    windowLayout->setContentsMargins(10, 10, 10, 10);
+    windowLayout->addWidget(container);
 
     setupLoginPage();
     setupRegisterPage();
@@ -103,7 +176,7 @@ void LoginWindow::setupRegisterPage()
     registerPage = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout(registerPage);
     layout->setSpacing(20);
-    layout->setContentsMargins(40, 40, 40, 40);
+    layout->setContentsMargins(40, 1, 40, 40);
 
     QLabel *titleLabel = new QLabel("新用户注册");
     titleLabel->setAlignment(Qt::AlignCenter);
