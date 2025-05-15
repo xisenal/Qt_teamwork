@@ -11,6 +11,16 @@
 #include <QApplication>
 #include <QToolButton>
 #include <QScrollArea>
+#include <QDialog>
+#include <QLabel>
+#include <QPixmap>
+
+class UserInfoDialog : public QDialog
+{
+    Q_OBJECT
+public:
+    explicit UserInfoDialog(QWidget *parent = nullptr);
+};
 
 class MainWindow : public QMainWindow
 {
@@ -25,7 +35,6 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
 
 private slots:
-    void toggleSidebar();
     void toggleLabSubMenu();
     void updateSubMenuPosition();
 
@@ -33,14 +42,15 @@ private slots:
 
 private:
     QWidget *sidebar;
-    QPushButton *toggleBtn;
-    QPropertyAnimation *animation;
-    bool isCollapsed = false;
-    const int expandedWidth = 220;
-    const int collapsedWidth = 70;
+    const int collapsedWidth = 100;
     QWidget *subMenu = nullptr;
     QPushButton *labBtn = nullptr;
     bool isSubMenuVisible = false;
+    
+    // 用户信息相关
+    QLabel *avatar = nullptr;
+    UserInfoDialog *userInfoDialog = nullptr;
+    void showUserInfoDialog(const QPoint &pos);
 
     QWidget* subMenuContainer; // 容器用于滚动区域
     QScrollArea* subMenuScrollArea;

@@ -5,6 +5,63 @@
 #include <QLabel>
 #include <QLineEdit>
 
+UserInfoDialog::UserInfoDialog(QWidget *parent)
+    : QDialog(parent)
+{
+    setWindowFlags(Qt::Popup | Qt::FramelessWindowHint);
+    setFixedSize(300, 100);
+
+    // 创建主布局
+    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    mainLayout->setContentsMargins(10, 10, 10, 10);
+    mainLayout->setSpacing(15);
+    mainLayout->setAlignment(Qt::AlignCenter);
+
+    // 创建水平布局容器
+    QWidget *contentWidget = new QWidget(this);
+    QHBoxLayout *contentLayout = new QHBoxLayout(contentWidget);
+    contentLayout->setSpacing(15);
+    contentLayout->setAlignment(Qt::AlignCenter);
+
+    // 头像
+    QLabel *avatarLabel = new QLabel(contentWidget);
+    QPixmap avatar(":/resources/avatar.png");
+    avatar = avatar.scaled(60, 60, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    avatarLabel->setPixmap(avatar);
+    avatarLabel->setFixedSize(60, 60);
+    avatarLabel->setAlignment(Qt::AlignCenter);
+
+    // 信息布局
+    QVBoxLayout *infoLayout = new QVBoxLayout();
+    infoLayout->setSpacing(5);
+    infoLayout->setAlignment(Qt::AlignVCenter);
+
+    QLabel *nameLabel = new QLabel("Name_of_this", contentWidget);
+    nameLabel->setStyleSheet("font-size: 14px; font-weight: bold; color: #333;");
+    nameLabel->setAlignment(Qt::AlignCenter);
+    QLabel *idLabel = new QLabel("学号：2200011302", contentWidget);
+    idLabel->setStyleSheet("font-size: 12px; color: #666;");
+    idLabel->setAlignment(Qt::AlignCenter);
+
+    infoLayout->addWidget(nameLabel);
+    infoLayout->addWidget(idLabel);
+
+    // 添加到水平布局
+    contentLayout->addWidget(avatarLabel);
+    contentLayout->addLayout(infoLayout);
+
+    // 将内容容器添加到主布局
+    mainLayout->addWidget(contentWidget);
+
+    // 设置窗口样式
+    setStyleSheet(
+        "QDialog {"
+        "    background: white;"
+        "    border: 1px solid #ddd;"
+        "    border-radius: 5px;"
+        "}");
+}
+
 void MainWindow::createSubMenu() {
     subMenu = new QWidget(this);
     subMenu->setStyleSheet(
@@ -234,33 +291,16 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 侧边栏初始化
     sidebar = new QWidget(this);
-    sidebar->setStyleSheet("background-color: #FFFFFF; border-right: 1px solid #E0E0E0;"); // Material Design风格的白色背景和边框
-    sidebar->setFixedWidth(expandedWidth);
+    sidebar->setStyleSheet("background-color: #FFFFFF;"); // Material Design风格的白色背景
+    sidebar->setFixedWidth(collapsedWidth);
 
-    // 带图标的切换按钮
-    toggleBtn = new QPushButton(sidebar);
-    toggleBtn->setIcon(QIcon(":/resources/menu.png"));
-    toggleBtn->setIconSize(QSize(32, 32));
-    toggleBtn->setStyleSheet(
-        "QPushButton {"
-        "   background-color: transparent;"
-        "   border: none;"
-        "   border-radius: 8px;"
-        "   padding: 8px;"
-        "   color: #757575;"
-        "}"
-        "QPushButton:hover {"
-        "   background-color: rgba(0, 0, 0, 0.04);"
-        "}"
-        "QPushButton:pressed {"
-        "   background-color: rgba(0, 0, 0, 0.08);"
-        "}");
+
 
     // 导航按钮配置
     QVBoxLayout *navLayout = new QVBoxLayout(sidebar);
     navLayout->setAlignment(Qt::AlignTop);
     navLayout->setSpacing(8);
-    navLayout->setContentsMargins(10, 20, 10, 20);
+    navLayout->setContentsMargins(10, 10, 10, 10);
 
     const QList<QPair<QString, QString>> navItems = {
         {"         主页", ":/resources/home.png"},
@@ -271,21 +311,52 @@ MainWindow::MainWindow(QWidget *parent)
 
     };
 
+    // 用户信息容器
+    QWidget *userInfoBox = new QWidget(sidebar);
+    userInfoBox->setObjectName("userInfoBox");
+    userInfoBox->setFixedHeight(70);
+    userInfoBox->setStyleSheet(
+        "QWidget#userInfoBox {"
+        "   background-color: transparent;"
+        "   border: none;"
+        "}");
+
+    // 用户信息布局
+    QVBoxLayout *userLayout = new QVBoxLayout(userInfoBox);
+    userLayout->setContentsMargins(10, 10, 10, 10);
+    userLayout->setSpacing(0);
+
+    // 头像显示
+    avatar = new QLabel(userInfoBox);
+    QPixmap pix(":/resources/avatar.png");
+    pix = pix.scaled(50, 50, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    avatar->setPixmap(pix);
+    avatar->setAlignment(Qt::AlignCenter);
+    avatar->setCursor(Qt::PointingHandCursor);
+    avatar->installEventFilter(this);
+
+    // 组装用户信息
+    userLayout->addWidget(avatar);
+    navLayout->addWidget(userInfoBox);
+
+    // 导航按钮
     foreach (const auto &item, navItems) {
         QPushButton *btn = new QPushButton(sidebar);
         btn->setIcon(QIcon(item.second));
-        btn->setText(item.first);
+        btn->setText("");
         btn->setIconSize(QSize(32, 32));
+        btn->setToolTip(item.first.trimmed());
         btn->setStyleSheet(
             "QPushButton {"
             "   color: #424242;"
-            "   text-align: left;"
+            "   text-align: center;"
             "   font-size: 14px;"
             "   font-weight: 500;"
-            "   padding: 12px 16px;"
+            "   padding: 12px 8px;"
+            "   margin: 2px;"
+            "   border: none;"
             "   border-radius: 4px;"
             "   background-color: transparent;"
-            "   spacing: 12px;"
             "}"
             "QPushButton:hover {"
             "   background-color: rgba(0, 0, 0, 0.04);"
@@ -311,7 +382,6 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     navLayout->addStretch();
-    navLayout->addWidget(toggleBtn);
 
     // 内容区域
     QTextEdit *contentArea = new QTextEdit(this);
@@ -341,46 +411,10 @@ MainWindow::MainWindow(QWidget *parent)
     
     mainVLayout->addLayout(contentLayout, 1);
 
-    // 动画配置
-    animation = new QPropertyAnimation(sidebar, "minimumWidth");
-    animation->setDuration(350);
-    animation->setEasingCurve(QEasingCurve::InOutQuad);
-
-    // 信号连接
-    connect(toggleBtn, &QPushButton::clicked, this, &MainWindow::toggleSidebar);
 
 
-    // 用户信息容器（带顶部边框）
-    QWidget *userInfoBox = new QWidget(sidebar);
-    userInfoBox->setObjectName("userInfoBox");
-    userInfoBox->setFixedHeight(100);  // 固定高度防止挤压
 
-    // 用户信息布局
-    QVBoxLayout *userLayout = new QVBoxLayout(userInfoBox);
-    userLayout->setContentsMargins(10, 10, 10, 10);
-    userLayout->setSpacing(8);
-
-    // 头像显示
-    QLabel *avatar = new QLabel(userInfoBox);
-    QPixmap pix(":/resources/avatar.png");
-    pix = pix.scaled(48, 48, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    avatar->setPixmap(pix);
-    avatar->setAlignment(Qt::AlignCenter);
-    //avatar->setStyleSheet("border-radius:24px; border:5px solid #0d0920;");
-
-    // 昵称标签
-    QLabel *username = new QLabel("Jam", userInfoBox);
-    username->setAlignment(Qt::AlignCenter);
-    username->setStyleSheet("color: #424242; font-size: 16px; font-weight: 500;");
-
-    // 组装用户信息
-    userLayout->addWidget(avatar);
-    userLayout->addWidget(username);
-
-
-    navLayout->addStretch();  // 将用户信息推到最底部
-    navLayout->addWidget(userInfoBox);
-    navLayout->addWidget(toggleBtn);  // 原toggleBtn位置调整
+    navLayout->addStretch();
 
 
     createSubMenu();  // 初始化 subMenu
@@ -411,46 +445,20 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
-void MainWindow::toggleSidebar()
+
+
+
+void MainWindow::showUserInfoDialog(const QPoint &pos)
 {
-    animation->stop();
-    animation->setStartValue(sidebar->width());
-    animation->setEndValue(isCollapsed ? expandedWidth : collapsedWidth);
-    animation->start();
-
-    // 更新按钮状态
-    if (isCollapsed) {
-        toggleBtn->setIcon(QIcon(":/resources/menu.png"));
-        foreach (QPushButton *btn, sidebar->findChildren<QPushButton*>()) {
-            if (btn != toggleBtn) {
-                btn->setText(btn->property("originalText").toString());
-                btn->setStyleSheet(btn->styleSheet() + "spacing: 15px;");  // 恢复间距
-            }
-        }
-    } else {
-        toggleBtn->setIcon(QIcon(":/icons/menu_close.png"));
-        foreach (QPushButton *btn, sidebar->findChildren<QPushButton*>()) {
-            if (btn != toggleBtn) {
-                btn->setProperty("originalText", btn->text());
-                btn->setText("");
-                btn->setStyleSheet(btn->styleSheet() + "spacing: 0px;");  // 移除文字间距
-            }
-        }
+    if (!userInfoDialog) {
+        userInfoDialog = new UserInfoDialog(this);
     }
 
-    // 新增折叠状态下的用户信息处理
-    foreach (QLabel *label, sidebar->findChildren<QLabel*>()) {
-        if (label->objectName() == "usernameLabel") {  // 给username设置objectName
-            label->setVisible(!isCollapsed);  // 折叠时隐藏用户名
-        }
-    }
-    // avatar->setPixmap(isCollapsed ?
-    //                       pix.scaled(32,32, Qt::KeepAspectRatio) :  // 折叠时小头像
-    //                       pix.scaled(48,48, Qt::KeepAspectRatio));  // 展开时正常大小
-
-    isCollapsed = !isCollapsed;
+    // 直接使用鼠标点击位置
+    QPoint globalPos = avatar->mapToGlobal(pos);
+    userInfoDialog->move(globalPos.x(), globalPos.y());
+    userInfoDialog->show();
 }
-
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
@@ -466,6 +474,20 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 #else
         globalPos = mouseEvent->globalPosition().toPoint();
 #endif
+
+        // 处理头像点击事件
+        if (obj == avatar) {
+            showUserInfoDialog(mouseEvent->pos());
+            return true;
+        }
+
+        // 处理点击窗口外部关闭弹窗
+        if (userInfoDialog && userInfoDialog->isVisible()) {
+            QPoint dialogPos = userInfoDialog->mapFromGlobal(globalPos);
+            if (!userInfoDialog->rect().contains(dialogPos)) {
+                userInfoDialog->hide();
+            }
+        }
 
         // 如果子菜单可见且点击的是主页按钮
         if (subMenu && subMenu->isVisible())
