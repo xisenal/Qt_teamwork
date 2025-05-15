@@ -3,6 +3,156 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QLineEdit>
+
+void MainWindow::createSubMenu() {
+    subMenu = new QWidget(this);
+    subMenu->setStyleSheet(
+        "QWidget {"
+        "   background: #FFFFFF;"
+        "   border: 1px solid #E0E0E0;"
+        "   border-radius: 4px;"
+        "   box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
+        "}"
+        "QLabel {"
+        "   color: #424242;"
+        "}"
+        "QToolButton {"
+        "   color: #424242;"
+        "   border: none;"
+        "   padding: 4px;"
+        "}"
+        "QToolButton:hover {"
+        "   background: #F5F5F5;"
+        "}");
+    subMenu->setFixedWidth(150);
+    subMenu->setFixedHeight(730);
+    subMenu->hide();
+
+    QVBoxLayout *mainLayout = new QVBoxLayout(subMenu);
+    mainLayout->setContentsMargins(4, 4, 4, 4);
+    mainLayout->setSpacing(4);
+
+    const QStringList items = {"Owner", "Contributor", "Visitor"};
+    foreach (const QString &text, items) {
+        // 创建可折叠面板
+        QWidget *panel = new QWidget(subMenu);
+        QVBoxLayout *panelLayout = new QVBoxLayout(panel);
+        panelLayout->setContentsMargins(0, 0, 0, 0);
+        panelLayout->setSpacing(0);
+
+        // 标题栏
+        QWidget *header = new QWidget(panel);
+        QHBoxLayout *headerLayout = new QHBoxLayout(header);
+        headerLayout->setContentsMargins(4, 4, 4, 4);
+        headerLayout->setSpacing(4);
+
+        // 折叠按钮
+        QToolButton *toggleBtn = new QToolButton(header);
+        toggleBtn->setArrowType(Qt::RightArrow);
+        toggleBtn->setObjectName("toggleBtn");
+        toggleBtn->setFixedSize(16, 16);
+
+        // 标题文本
+        QLabel *titleLabel = new QLabel(text, header);
+
+        // 添加按钮
+        QToolButton *addBtn = new QToolButton(header);
+        addBtn->setText("+");
+        addBtn->setFixedSize(16, 16);
+
+        headerLayout->addWidget(toggleBtn);
+        headerLayout->addWidget(titleLabel);
+        headerLayout->addStretch();
+        headerLayout->addWidget(addBtn);
+
+        // 内容区域
+        QWidget *content = new QWidget(panel);
+        QVBoxLayout *contentLayout = new QVBoxLayout(content);
+        contentLayout->setContentsMargins(24, 2, 2, 2); // 添加左侧缩进
+        content->hide();
+
+        panelLayout->addWidget(header);
+        panelLayout->addWidget(content);
+        mainLayout->addWidget(panel);
+
+        // 连接信号
+        connect(toggleBtn, &QToolButton::clicked, [=](){
+            content->setVisible(!content->isVisible());
+            toggleBtn->setArrowType(content->isVisible() ?
+                                        Qt::DownArrow : Qt::RightArrow);
+        });
+
+        connect(addBtn, &QToolButton::clicked, [=](){
+            // 创建可编辑项
+            QLineEdit *newItem = new QLineEdit(content);
+            newItem->setPlaceholderText("New lab");
+            newItem->setStyleSheet(
+                "QLineEdit {"
+                "   border: 1px solid #E0E0E0;"
+                "   border-radius: 2px;"
+                "   padding: 2px 4px;"
+                "}"
+                "QLineEdit:focus {"
+                "   border-color: #0078D4;"
+                "}");
+            newItem->setMinimumHeight(24);
+            contentLayout->addWidget(newItem);
+        });
+    }
+
+    mainLayout->addStretch(); // 添加弹簧使内容置顶
+
+    // 事件过滤器保持原有逻辑
+    sidebar->installEventFilter(this);
+
+    // 创建完成后立即执行布局计算
+    subMenu->show();  // 必须先show才能正确计算尺寸
+    subMenu->hide();
+    //subMenu->setAttribute(Qt::WA_LayoutUpsideDown);  // 适应不同布局方向
+}
+
+
+// 修改后的位置更新函数
+void MainWindow::updateSubMenuPosition() {
+    if (subMenu && labBtn) {
+        // 转换为当前窗口坐标系
+        QPoint pos = labBtn->mapToGlobal(QPoint(0, 0));
+        pos = this->mapFromGlobal(pos);
+
+        // 调整显示位置为按钮右下方
+        int y = 38;//手动调的
+        subMenu->move(100, y); // 垂直居中
+
+        // 确保最小高度
+        //subMenu->setMinimumHeight(items.count() * 30); // 根据项目数动态调整
+        subMenu->adjustSize(); // 关键！让布局重新计算
+    }
+}
+
+// 修改后的切换函数
+void MainWindow::toggleLabSubMenu() {
+    if (!subMenu) {
+        createSubMenu();
+        subMenu->setParent(this);  // 确保父子关系正确
+        subMenu->setWindowFlags(Qt::SubWindow);
+    }
+
+    isSubMenuVisible = !isSubMenuVisible;
+
+    if (isSubMenuVisible) {
+        updateSubMenuPosition();
+        // 展开第一个分类（可选）
+        if(auto firstPanel = subMenu->findChild<QWidget*>())
+            firstPanel->findChild<QToolButton*>()->click();
+    }
+
+    subMenu->setVisible(isSubMenuVisible);
+    subMenu->raise();
+}
+
+
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -24,6 +174,12 @@ MainWindow::MainWindow(QWidget *parent)
     minButton = new QPushButton("-", titleBar);
     maxButton = new QPushButton("□", titleBar);
     closeButton = new QPushButton("×", titleBar);
+
+
+
+    // labBtn = new QLabel(this);     // 确保已创建
+    // subMenu = new QMenu(this);     // 确保已创建
+    // labBtn->installEventFilter(this); // 安装事件过滤器
 
     // 设置按钮样式
     QString buttonStyle = 
@@ -144,6 +300,14 @@ MainWindow::MainWindow(QWidget *parent)
             "}");
         btn->setFixedHeight(50);
         navLayout->addWidget(btn);
+
+        if (item.first.contains("实验室")) {
+            labBtn = btn;  // 保存实验室按钮的指针
+        }
+
+        if (item.first.contains("主页")) {
+            homeBtn = btn;  // 保存主页按钮指针
+        }
     }
 
     navLayout->addStretch();
@@ -217,6 +381,18 @@ MainWindow::MainWindow(QWidget *parent)
     navLayout->addStretch();  // 将用户信息推到最底部
     navLayout->addWidget(userInfoBox);
     navLayout->addWidget(toggleBtn);  // 原toggleBtn位置调整
+
+
+    createSubMenu();  // 初始化 subMenu
+    // 在构造函数末尾添加连接
+    connect(labBtn, &QPushButton::clicked, this, &MainWindow::toggleLabSubMenu);
+
+    connect(sidebar, &QWidget::customContextMenuRequested,
+            this, &MainWindow::updateSubMenuPosition);
+
+    // 添加事件过滤器处理外部点击（在MainWindow构造函数末尾）
+    //subMenu->installEventFilter(this);
+    qApp->installEventFilter(this);
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -274,3 +450,37 @@ void MainWindow::toggleSidebar()
 
     isCollapsed = !isCollapsed;
 }
+
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::MouseButtonPress)
+    {
+        QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent*>(event);
+        if (!mouseEvent) return QMainWindow::eventFilter(obj, event);
+
+        // 获取点击的全局坐标
+        QPoint globalPos;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        globalPos = mouseEvent->globalPos();
+#else
+        globalPos = mouseEvent->globalPosition().toPoint();
+#endif
+
+        // 如果子菜单可见且点击的是主页按钮
+        if (subMenu && subMenu->isVisible())
+        {
+            // 转换坐标到主页按钮坐标系
+            QPoint homeBtnPos = homeBtn->mapFromGlobal(globalPos);
+
+            // 判断是否点击在主页按钮区域内
+            if (homeBtn->rect().contains(homeBtnPos))
+            {
+                subMenu->hide();
+                isSubMenuVisible = false;
+            }
+        }
+    }
+    return QMainWindow::eventFilter(obj, event);
+}
+

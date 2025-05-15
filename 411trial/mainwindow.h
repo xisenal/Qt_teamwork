@@ -8,12 +8,17 @@
 #include <QIcon>
 #include <QPoint>
 #include <QMouseEvent>
+#include <QApplication>
+#include <QToolButton>
+#include <QScrollArea>
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
     MainWindow(QWidget *parent = nullptr);
+    void createSubMenu();
+    bool eventFilter (QObject *obj, QEvent *event);
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -21,6 +26,10 @@ protected:
 
 private slots:
     void toggleSidebar();
+    void toggleLabSubMenu();
+    void updateSubMenuPosition();
+
+
 
 private:
     QWidget *sidebar;
@@ -29,6 +38,15 @@ private:
     bool isCollapsed = false;
     const int expandedWidth = 220;
     const int collapsedWidth = 70;
+    QWidget *subMenu = nullptr;
+    QPushButton *labBtn = nullptr;
+    bool isSubMenuVisible = false;
+
+    QWidget* subMenuContainer; // 容器用于滚动区域
+    QScrollArea* subMenuScrollArea;
+
+    QPushButton *homeBtn = nullptr; // 保存主页按钮指针
+
 
     // 窗口拖动相关
     QPoint dragPosition;
