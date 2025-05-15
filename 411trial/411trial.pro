@@ -17,14 +17,16 @@ SOURCES += \
     loginwindow.cpp \
     usermanager.cpp \
     emailsender.cpp \
-    adminwindow.cpp
+    adminwindow.cpp \
+    todolistwindow.cpp
 
 HEADERS += \
     mainwindow.h \
     loginwindow.h \
     usermanager.h \
     emailsender.h \
-    adminwindow.h
+    adminwindow.h \
+    todolistwindow.h
 
 FORMS += \
     mainwindow.ui

@@ -14,6 +14,7 @@
 #include <QDialog>
 #include <QLabel>
 #include <QPixmap>
+#include "todolistwindow.h"
 
 class UserInfoDialog : public QDialog
 {
@@ -37,6 +38,7 @@ protected:
 private slots:
     void toggleLabSubMenu();
     void updateSubMenuPosition();
+    void showTodoList();
 
 
 
@@ -45,7 +47,9 @@ private:
     const int collapsedWidth = 100;
     QWidget *subMenu = nullptr;
     QPushButton *labBtn = nullptr;
+    QPushButton *todoListBtn = nullptr;
     bool isSubMenuVisible = false;
+    TodoListWindow *todoListWindow = nullptr;
     
     // 用户信息相关
     QLabel *avatar = nullptr;

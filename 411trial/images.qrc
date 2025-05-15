@@ -6,5 +6,6 @@
     <file>resources/tasks.png</file>
     <file>resources/profile.png</file>
     <file>resources/avatar.png</file>
+    <file>resources/to-do.png</file>
   </qresource>
 </RCC>

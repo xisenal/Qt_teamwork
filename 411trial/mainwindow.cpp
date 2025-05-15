@@ -306,9 +306,8 @@ MainWindow::MainWindow(QWidget *parent)
         {"         主页", ":/resources/home.png"},
         {"        实验室", ":/resources/lab.png"},
         {"         项目", ":/resources/tasks.png"},
-        {"      个人资料", ":/resources/profile.png"}
-
-
+        {"      个人资料", ":/resources/profile.png"},
+        {"     To Do List", ":/resources/to-do.png"}
     };
 
     // 用户信息容器
@@ -378,6 +377,9 @@ MainWindow::MainWindow(QWidget *parent)
 
         if (item.first.contains("主页")) {
             homeBtn = btn;  // 保存主页按钮指针
+        } else if (item.first.contains("To Do List")) {
+            todoListBtn = btn;  // 保存To Do List按钮指针
+            connect(btn, &QPushButton::clicked, this, &MainWindow::showTodoList);
         }
     }
 
@@ -447,6 +449,14 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 
 
 
+
+void MainWindow::showTodoList()
+{
+    if (!todoListWindow) {
+        todoListWindow = new TodoListWindow(this);
+    }
+    todoListWindow->show();
+}
 
 void MainWindow::showUserInfoDialog(const QPoint &pos)
 {
