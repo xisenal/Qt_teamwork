@@ -1,5 +1,5 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource prefix="i18n">
-<file alias="411trial_zh_CN.qm">D:/Code_space/Qt_project/Qt_teamwork/411trial/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/debug/411trial_zh_CN.qm</file>
+<file alias="411trial_zh_CN.qm">D:/trial/Qt_teamwork/411trial/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/debug/411trial_zh_CN.qm</file>
 </qresource>
 </RCC>
