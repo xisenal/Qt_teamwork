@@ -1,11 +1,15 @@
 <RCC>
-  <qresource prefix="/">
-    <file>resources/menu.png</file>
-    <file>resources/home.png</file>
-    <file>resources/lab.png</file>
-    <file>resources/tasks.png</file>
-    <file>resources/profile.png</file>
-    <file>resources/avatar.png</file>
-    <file>resources/to-do.png</file>
-  </qresource>
+    <qresource prefix="/">
+        <file>resources/menu.png</file>
+        <file>resources/home.png</file>
+        <file>resources/lab.png</file>
+        <file>resources/tasks.png</file>
+        <file>resources/profile.png</file>
+        <file>resources/avatar.png</file>
+        <file>resources/to-do.png</file>
+        <file>resources/bread.jpg</file>
+        <file>resources/Filter.jpg</file>
+        <file>resources/Swivel.jpg</file>
+        <file>resources/Wheels.jpg</file>
+    </qresource>
 </RCC>
