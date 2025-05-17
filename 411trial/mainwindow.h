@@ -1,6 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "canvas.h"
+#include "todolistwindow.h"
+
 #include <QMainWindow>
 #include <QPushButton>
 #include <QTextEdit>
@@ -14,7 +17,6 @@
 #include <QDialog>
 #include <QLabel>
 #include <QPixmap>
-#include "todolistwindow.h"
 #include <QStackedWidget>
 #include <QMessageBox>
 
@@ -72,6 +74,7 @@ private slots:
     void toggleLabSubMenu();
     void updateSubMenuPosition();
     void showTodoList();
+    void handleLabButtonClick();
 
 
 
@@ -103,7 +106,9 @@ private:
     QPushButton *closeButton;
     bool isPinned = false;
 
-
+    // 用于页面切换与新页面
+    QStackedWidget *stackedWidget;
+    canvas *canvasPage;
 
     //首页相关
     QStackedWidget *contentStack;  // 新增：页面堆栈

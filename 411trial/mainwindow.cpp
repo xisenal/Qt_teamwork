@@ -1059,11 +1059,14 @@ MainWindow::MainWindow(QWidget *parent)
 
         if (item.first.contains("实验室")) {
             labBtn = btn;  // 保存实验室按钮的指针
-            hideHomePage();
+            // hideHomePage();
             connect(labBtn, &QPushButton::clicked, [this](){
-                contentStack->setCurrentWidget(defaultContent);
-                //resetButtonStates(labBtn); // 更新按钮状态
-                //updateButtonState(labBtn);
+                canvasPage = new canvas();
+                contentStack->addWidget(canvasPage);
+                contentStack->setCurrentWidget(canvasPage);
+                // contentStack->setCurrentWidget(defaultContent);
+            //     //resetButtonStates(labBtn); // 更新按钮状态
+            //     //updateButtonState(labBtn);
             });
             //contentStack->setCurrentWidget(defaultContent);
 
@@ -1073,7 +1076,7 @@ MainWindow::MainWindow(QWidget *parent)
             homeBtn = btn;  // 保存主页按钮指针
             connect(homeBtn, &QPushButton::clicked, [this](){
                 //switchToHomePage(true);  // 强制刷新
-                showHomePage();
+                // showHomePage();
                 contentStack->setCurrentWidget(githubHomePage);
                 //resetButtonStates(homeBtn);
                 //updateButtonState(homeBtn);
@@ -1109,6 +1112,17 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(centralWidget);
     
     QVBoxLayout *mainVLayout = new QVBoxLayout(centralWidget);
+
+    // 创建StackedWidget作为中央部件
+    stackedWidget = new QStackedWidget(this);
+    // setCentralWidget(stackedWidget);
+
+    // // 创建页面容器
+    QWidget *mainPage = new QWidget();
+    stackedWidget->addWidget(mainPage); // 必须添加为页面
+
+    // // 在页面上创建布局
+    // QVBoxLayout *mainVLayout = new QVBoxLayout(mainPage); // ✅ 正确绑定到页面
     mainVLayout->setContentsMargins(0, 0, 0, 0);
     mainVLayout->setSpacing(0);
     mainVLayout->addWidget(titleBar);
@@ -1132,6 +1146,8 @@ MainWindow::MainWindow(QWidget *parent)
     createSubMenu();  // 初始化 subMenu
     // 在构造函数末尾添加连接
     connect(labBtn, &QPushButton::clicked, this, &MainWindow::toggleLabSubMenu);
+
+    // connect(labBtn, &QPushButton::clicked, this, &MainWindow::handleLabButtonClick);
 
     connect(sidebar, &QWidget::customContextMenuRequested,
             this, &MainWindow::updateSubMenuPosition);
@@ -1396,5 +1412,21 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 // }
 
 
+void MainWindow::handleLabButtonClick()
+{
+    // stackedWidget = new QStackedWidget(this);
+    qDebug()<<"AAA";
+    qDebug() << "stackedWidget地址:" << stackedWidget;
+    if (!stackedWidget->widget(1)) { // 首次访问时创建
+        qDebug()<<"BBB";
+        canvasPage = new canvas();
+        stackedWidget->addWidget(canvasPage);
+        stackedWidget->setCurrentWidget(canvasPage);
+        // int index = stackedWidget->addWidget(canvasPage);
+        // qDebug() << "New widget added at index:" << index;
+    }
+    qDebug()<<"CCC";
+    // stackedWidget->setCurrentIndex(1);
+}
 
 

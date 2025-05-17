@@ -12,6 +12,7 @@ CONFIG += c++17
 RESOURCES += images.qrc
 
 SOURCES += \
+    canvas.cpp \
     main.cpp \
     mainwindow.cpp \
     loginwindow.cpp \
@@ -21,6 +22,7 @@ SOURCES += \
     todolistwindow.cpp
 
 HEADERS += \
+    canvas.h \
     mainwindow.h \
     loginwindow.h \
     usermanager.h \
@@ -29,6 +31,7 @@ HEADERS += \
     todolistwindow.h
 
 FORMS += \
+    canvas.ui \
     mainwindow.ui
 
 TRANSLATIONS += \
