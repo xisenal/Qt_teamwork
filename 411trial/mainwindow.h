@@ -24,7 +24,7 @@ class UserInfoDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit UserInfoDialog(QWidget *parent = nullptr);
+    explicit UserInfoDialog(const QString &email, QWidget *parent = nullptr);
 };
 
 class MainWindow : public QMainWindow
@@ -34,7 +34,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     void createSubMenu();
     bool eventFilter (QObject *obj, QEvent *event);
-
+    void setCurrentUser(const QString &email);
 
     void switchToHomePage(bool forceShow);
     QString getButtonActiveStyle();
@@ -48,6 +48,9 @@ public:
                                        const QString &description);
     QWidget* createLabsPanel();
     QWidget* createGithubStylePage();
+
+private:
+    QString currentUserEmail;
     QString getActiveButtonStyle();
     QString getNormalButtonStyle();
     void resetButtonStates(QPushButton *activeButton);

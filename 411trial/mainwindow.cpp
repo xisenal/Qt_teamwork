@@ -1,5 +1,6 @@
 // mainwindow.cpp
 #include "mainwindow.h"
+#include "usermanager.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -8,7 +9,7 @@
 #include <QFormLayout>
 #include <QRandomGenerator>
 
-UserInfoDialog::UserInfoDialog(QWidget *parent)
+UserInfoDialog::UserInfoDialog(const QString &email, QWidget *parent)
     : QDialog(parent)
 {
     setWindowFlags(Qt::Popup | Qt::FramelessWindowHint);
@@ -26,11 +27,19 @@ UserInfoDialog::UserInfoDialog(QWidget *parent)
     contentLayout->setSpacing(15);
     contentLayout->setAlignment(Qt::AlignCenter);
 
+    // 获取用户信息
+    QString avatarPath, schoolId, description;
+    UserManager userManager;
+    userManager.getUserDetailInfo(email, avatarPath, schoolId, description);
+
     // 头像
     QLabel *avatarLabel = new QLabel(contentWidget);
-    QPixmap avatar(":/resources/avatar.png");
-    avatar = avatar.scaled(60, 60, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    avatarLabel->setPixmap(avatar);
+    QPixmap avatarPixmap(avatarPath);
+    if (avatarPixmap.isNull()) {
+        avatarPixmap = QPixmap(":/resources/user.png");
+    }
+    avatarPixmap = avatarPixmap.scaled(60, 60, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    avatarLabel->setPixmap(avatarPixmap);
     avatarLabel->setFixedSize(60, 60);
     avatarLabel->setAlignment(Qt::AlignCenter);
 
@@ -39,10 +48,10 @@ UserInfoDialog::UserInfoDialog(QWidget *parent)
     infoLayout->setSpacing(5);
     infoLayout->setAlignment(Qt::AlignVCenter);
 
-    QLabel *nameLabel = new QLabel("Name_of_this", contentWidget);
+    QLabel *nameLabel = new QLabel(description, contentWidget);
     nameLabel->setStyleSheet("font-size: 14px; font-weight: bold; color: #333;");
     nameLabel->setAlignment(Qt::AlignCenter);
-    QLabel *idLabel = new QLabel("学号：2200011302", contentWidget);
+    QLabel *idLabel = new QLabel(QString("学号：%1").arg(schoolId), contentWidget);
     idLabel->setStyleSheet("font-size: 12px; color: #666;");
     idLabel->setAlignment(Qt::AlignCenter);
 
@@ -1184,10 +1193,28 @@ void MainWindow::showTodoList()
     todoListWindow->show();
 }
 
+void MainWindow::setCurrentUser(const QString &email)
+{
+    currentUserEmail = email;
+    
+    // 获取用户信息
+    QString avatarPath, schoolId, description;
+    UserManager userManager;
+    if (userManager.getUserDetailInfo(email, avatarPath, schoolId, description)) {
+        // 更新侧边栏头像
+        QPixmap avatarPixmap(avatarPath);
+        if (avatarPixmap.isNull()) {
+            avatarPixmap = QPixmap(":/resources/user.png");
+        }
+        avatarPixmap = avatarPixmap.scaled(50, 50, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        avatar->setPixmap(avatarPixmap);
+    }
+}
+
 void MainWindow::showUserInfoDialog(const QPoint &pos)
 {
     if (!userInfoDialog) {
-        userInfoDialog = new UserInfoDialog(this);
+        userInfoDialog = new UserInfoDialog(currentUserEmail, this);
     }
 
     // 直接使用鼠标点击位置

@@ -11,5 +11,6 @@
         <file>resources/Filter.jpg</file>
         <file>resources/Swivel.jpg</file>
         <file>resources/Wheels.jpg</file>
+        <file>resources/user.png</file>
     </qresource>
 </RCC>

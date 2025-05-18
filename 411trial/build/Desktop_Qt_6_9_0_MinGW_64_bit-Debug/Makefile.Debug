@@ -153,6 +153,7 @@ debug/qrc_images.cpp: ../../images.qrc \
 		../../resources/bread.jpg \
 		../../resources/lab.png \
 		../../resources/tasks.png \
+		../../resources/user.png \
 		../../resources/avatar.png \
 		../../resources/menu.png \
 		../../resources/profile.png \
@@ -375,7 +376,7 @@ debug/moc_canvas.cpp: ../../canvas.h \
 		C:/Qt/6.9.0/mingw_64/include/QtGui/qguiapplication_platform.h \
 		debug/moc_predefs.h \
 		C:/Qt/6.9.0/mingw_64/bin/moc.exe
-	C:\Qt\6.9.0\mingw_64\bin\moc.exe $(DEFINES) --include D:/QT/Qt_teamwork/411trial/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/debug/moc_predefs.h -IC:/Qt/6.9.0/mingw_64/mkspecs/win32-g++ -ID:/QT/Qt_teamwork/411trial -IC:/Qt/6.9.0/mingw_64/include -IC:/Qt/6.9.0/mingw_64/include/QtWidgets -IC:/Qt/6.9.0/mingw_64/include/QtGui -IC:/Qt/6.9.0/mingw_64/include/QtSql -IC:/Qt/6.9.0/mingw_64/include/QtNetwork -IC:/Qt/6.9.0/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++ -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed -IC:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include ..\..\canvas.h -o debug\moc_canvas.cpp
+	C:\Qt\6.9.0\mingw_64\bin\moc.exe $(DEFINES) --include D:/Code_space/Qt_project/workspace4/Qt_teamwork/411trial/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/debug/moc_predefs.h -IC:/Qt/6.9.0/mingw_64/mkspecs/win32-g++ -ID:/Code_space/Qt_project/workspace4/Qt_teamwork/411trial -IC:/Qt/6.9.0/mingw_64/include -IC:/Qt/6.9.0/mingw_64/include/QtWidgets -IC:/Qt/6.9.0/mingw_64/include/QtGui -IC:/Qt/6.9.0/mingw_64/include/QtSql -IC:/Qt/6.9.0/mingw_64/include/QtNetwork -IC:/Qt/6.9.0/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++ -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed -IC:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include ..\..\canvas.h -o debug\moc_canvas.cpp
 
 debug/moc_mainwindow.cpp: ../../mainwindow.h \
 		../../canvas.h \
@@ -639,7 +640,7 @@ debug/moc_mainwindow.cpp: ../../mainwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qdialogbuttonbox.h \
 		debug/moc_predefs.h \
 		C:/Qt/6.9.0/mingw_64/bin/moc.exe
-	C:\Qt\6.9.0\mingw_64\bin\moc.exe $(DEFINES) --include D:/QT/Qt_teamwork/411trial/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/debug/moc_predefs.h -IC:/Qt/6.9.0/mingw_64/mkspecs/win32-g++ -ID:/QT/Qt_teamwork/411trial -IC:/Qt/6.9.0/mingw_64/include -IC:/Qt/6.9.0/mingw_64/include/QtWidgets -IC:/Qt/6.9.0/mingw_64/include/QtGui -IC:/Qt/6.9.0/mingw_64/include/QtSql -IC:/Qt/6.9.0/mingw_64/include/QtNetwork -IC:/Qt/6.9.0/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++ -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed -IC:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include ..\..\mainwindow.h -o debug\moc_mainwindow.cpp
+	C:\Qt\6.9.0\mingw_64\bin\moc.exe $(DEFINES) --include D:/Code_space/Qt_project/workspace4/Qt_teamwork/411trial/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/debug/moc_predefs.h -IC:/Qt/6.9.0/mingw_64/mkspecs/win32-g++ -ID:/Code_space/Qt_project/workspace4/Qt_teamwork/411trial -IC:/Qt/6.9.0/mingw_64/include -IC:/Qt/6.9.0/mingw_64/include/QtWidgets -IC:/Qt/6.9.0/mingw_64/include/QtGui -IC:/Qt/6.9.0/mingw_64/include/QtSql -IC:/Qt/6.9.0/mingw_64/include/QtNetwork -IC:/Qt/6.9.0/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++ -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed -IC:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include ..\..\mainwindow.h -o debug\moc_mainwindow.cpp
 
 debug/moc_loginwindow.cpp: ../../loginwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/QWidget \
@@ -871,6 +872,26 @@ debug/moc_loginwindow.cpp: ../../loginwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtSql/QSqlError \
 		C:/Qt/6.9.0/mingw_64/include/QtSql/qsqlerror.h \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QString \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QDir \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdir.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdirlisting.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfiledevice.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdatetime.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcalendar.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfile.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfileinfo.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qtimezone.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QFile \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QJsonObject \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonobject.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonvalue.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcborvalue.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcborcommon.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qregularexpression.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/quuid.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsondocument.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonparseerror.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QJsonDocument \
 		../../emailsender.h \
 		C:/Qt/6.9.0/mingw_64/include/QtNetwork/QTcpSocket \
 		C:/Qt/6.9.0/mingw_64/include/QtNetwork/qtcpsocket.h \
@@ -884,8 +905,6 @@ debug/moc_loginwindow.cpp: ../../loginwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtNetwork/qsslerror.h \
 		C:/Qt/6.9.0/mingw_64/include/QtNetwork/qsslcertificate.h \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/qcryptographichash.h \
-		C:/Qt/6.9.0/mingw_64/include/QtCore/qdatetime.h \
-		C:/Qt/6.9.0/mingw_64/include/QtCore/qcalendar.h \
 		C:/Qt/6.9.0/mingw_64/include/QtNetwork/qssl.h \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QFlags \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QTextStream \
@@ -906,7 +925,6 @@ debug/moc_loginwindow.cpp: ../../loginwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qstyleoption.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qabstractspinbox.h \
 		C:/Qt/6.9.0/mingw_64/include/QtGui/qvalidator.h \
-		C:/Qt/6.9.0/mingw_64/include/QtCore/qregularexpression.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qslider.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qabstractslider.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qstyle.h \
@@ -914,7 +932,7 @@ debug/moc_loginwindow.cpp: ../../loginwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qrubberband.h \
 		debug/moc_predefs.h \
 		C:/Qt/6.9.0/mingw_64/bin/moc.exe
-	C:\Qt\6.9.0\mingw_64\bin\moc.exe $(DEFINES) --include D:/QT/Qt_teamwork/411trial/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/debug/moc_predefs.h -IC:/Qt/6.9.0/mingw_64/mkspecs/win32-g++ -ID:/QT/Qt_teamwork/411trial -IC:/Qt/6.9.0/mingw_64/include -IC:/Qt/6.9.0/mingw_64/include/QtWidgets -IC:/Qt/6.9.0/mingw_64/include/QtGui -IC:/Qt/6.9.0/mingw_64/include/QtSql -IC:/Qt/6.9.0/mingw_64/include/QtNetwork -IC:/Qt/6.9.0/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++ -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed -IC:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include ..\..\loginwindow.h -o debug\moc_loginwindow.cpp
+	C:\Qt\6.9.0\mingw_64\bin\moc.exe $(DEFINES) --include D:/Code_space/Qt_project/workspace4/Qt_teamwork/411trial/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/debug/moc_predefs.h -IC:/Qt/6.9.0/mingw_64/mkspecs/win32-g++ -ID:/Code_space/Qt_project/workspace4/Qt_teamwork/411trial -IC:/Qt/6.9.0/mingw_64/include -IC:/Qt/6.9.0/mingw_64/include/QtWidgets -IC:/Qt/6.9.0/mingw_64/include/QtGui -IC:/Qt/6.9.0/mingw_64/include/QtSql -IC:/Qt/6.9.0/mingw_64/include/QtNetwork -IC:/Qt/6.9.0/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++ -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed -IC:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include ..\..\loginwindow.h -o debug\moc_loginwindow.cpp
 
 debug/moc_usermanager.cpp: ../../usermanager.h \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QObject \
@@ -1052,9 +1070,35 @@ debug/moc_usermanager.cpp: ../../usermanager.h \
 		C:/Qt/6.9.0/mingw_64/include/QtSql/QSqlError \
 		C:/Qt/6.9.0/mingw_64/include/QtSql/qsqlerror.h \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QString \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QDir \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdir.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdirlisting.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfiledevice.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qiodevice.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qspan.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/q20iterator.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdatetime.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcalendar.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qlocale.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfile.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfileinfo.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qtimezone.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QFile \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QJsonObject \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonobject.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonvalue.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcborvalue.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcborcommon.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qregularexpression.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qurl.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/quuid.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qendian.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsondocument.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonparseerror.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QJsonDocument \
 		debug/moc_predefs.h \
 		C:/Qt/6.9.0/mingw_64/bin/moc.exe
-	C:\Qt\6.9.0\mingw_64\bin\moc.exe $(DEFINES) --include D:/QT/Qt_teamwork/411trial/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/debug/moc_predefs.h -IC:/Qt/6.9.0/mingw_64/mkspecs/win32-g++ -ID:/QT/Qt_teamwork/411trial -IC:/Qt/6.9.0/mingw_64/include -IC:/Qt/6.9.0/mingw_64/include/QtWidgets -IC:/Qt/6.9.0/mingw_64/include/QtGui -IC:/Qt/6.9.0/mingw_64/include/QtSql -IC:/Qt/6.9.0/mingw_64/include/QtNetwork -IC:/Qt/6.9.0/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++ -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed -IC:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include ..\..\usermanager.h -o debug\moc_usermanager.cpp
+	C:\Qt\6.9.0\mingw_64\bin\moc.exe $(DEFINES) --include D:/Code_space/Qt_project/workspace4/Qt_teamwork/411trial/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/debug/moc_predefs.h -IC:/Qt/6.9.0/mingw_64/mkspecs/win32-g++ -ID:/Code_space/Qt_project/workspace4/Qt_teamwork/411trial -IC:/Qt/6.9.0/mingw_64/include -IC:/Qt/6.9.0/mingw_64/include/QtWidgets -IC:/Qt/6.9.0/mingw_64/include/QtGui -IC:/Qt/6.9.0/mingw_64/include/QtSql -IC:/Qt/6.9.0/mingw_64/include/QtNetwork -IC:/Qt/6.9.0/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++ -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed -IC:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include ..\..\usermanager.h -o debug\moc_usermanager.cpp
 
 debug/moc_emailsender.cpp: ../../emailsender.h \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QObject \
@@ -1207,7 +1251,7 @@ debug/moc_emailsender.cpp: ../../emailsender.h \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/qrandom.h \
 		debug/moc_predefs.h \
 		C:/Qt/6.9.0/mingw_64/bin/moc.exe
-	C:\Qt\6.9.0\mingw_64\bin\moc.exe $(DEFINES) --include D:/QT/Qt_teamwork/411trial/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/debug/moc_predefs.h -IC:/Qt/6.9.0/mingw_64/mkspecs/win32-g++ -ID:/QT/Qt_teamwork/411trial -IC:/Qt/6.9.0/mingw_64/include -IC:/Qt/6.9.0/mingw_64/include/QtWidgets -IC:/Qt/6.9.0/mingw_64/include/QtGui -IC:/Qt/6.9.0/mingw_64/include/QtSql -IC:/Qt/6.9.0/mingw_64/include/QtNetwork -IC:/Qt/6.9.0/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++ -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed -IC:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include ..\..\emailsender.h -o debug\moc_emailsender.cpp
+	C:\Qt\6.9.0\mingw_64\bin\moc.exe $(DEFINES) --include D:/Code_space/Qt_project/workspace4/Qt_teamwork/411trial/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/debug/moc_predefs.h -IC:/Qt/6.9.0/mingw_64/mkspecs/win32-g++ -ID:/Code_space/Qt_project/workspace4/Qt_teamwork/411trial -IC:/Qt/6.9.0/mingw_64/include -IC:/Qt/6.9.0/mingw_64/include/QtWidgets -IC:/Qt/6.9.0/mingw_64/include/QtGui -IC:/Qt/6.9.0/mingw_64/include/QtSql -IC:/Qt/6.9.0/mingw_64/include/QtNetwork -IC:/Qt/6.9.0/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++ -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed -IC:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include ..\..\emailsender.h -o debug\moc_emailsender.cpp
 
 debug/moc_adminwindow.cpp: ../../adminwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/QMainWindow \
@@ -1449,9 +1493,28 @@ debug/moc_adminwindow.cpp: ../../adminwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtSql/QSqlError \
 		C:/Qt/6.9.0/mingw_64/include/QtSql/qsqlerror.h \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QString \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QDir \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdir.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdirlisting.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfiledevice.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdatetime.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcalendar.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfile.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfileinfo.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qtimezone.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QFile \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QJsonObject \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonobject.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonvalue.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcborvalue.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcborcommon.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/quuid.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsondocument.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonparseerror.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QJsonDocument \
 		debug/moc_predefs.h \
 		C:/Qt/6.9.0/mingw_64/bin/moc.exe
-	C:\Qt\6.9.0\mingw_64\bin\moc.exe $(DEFINES) --include D:/QT/Qt_teamwork/411trial/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/debug/moc_predefs.h -IC:/Qt/6.9.0/mingw_64/mkspecs/win32-g++ -ID:/QT/Qt_teamwork/411trial -IC:/Qt/6.9.0/mingw_64/include -IC:/Qt/6.9.0/mingw_64/include/QtWidgets -IC:/Qt/6.9.0/mingw_64/include/QtGui -IC:/Qt/6.9.0/mingw_64/include/QtSql -IC:/Qt/6.9.0/mingw_64/include/QtNetwork -IC:/Qt/6.9.0/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++ -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed -IC:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include ..\..\adminwindow.h -o debug\moc_adminwindow.cpp
+	C:\Qt\6.9.0\mingw_64\bin\moc.exe $(DEFINES) --include D:/Code_space/Qt_project/workspace4/Qt_teamwork/411trial/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/debug/moc_predefs.h -IC:/Qt/6.9.0/mingw_64/mkspecs/win32-g++ -ID:/Code_space/Qt_project/workspace4/Qt_teamwork/411trial -IC:/Qt/6.9.0/mingw_64/include -IC:/Qt/6.9.0/mingw_64/include/QtWidgets -IC:/Qt/6.9.0/mingw_64/include/QtGui -IC:/Qt/6.9.0/mingw_64/include/QtSql -IC:/Qt/6.9.0/mingw_64/include/QtNetwork -IC:/Qt/6.9.0/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++ -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed -IC:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include ..\..\adminwindow.h -o debug\moc_adminwindow.cpp
 
 debug/moc_todolistwindow.cpp: ../../todolistwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/QMainWindow \
@@ -1685,7 +1748,7 @@ debug/moc_todolistwindow.cpp: ../../todolistwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qcheckbox.h \
 		debug/moc_predefs.h \
 		C:/Qt/6.9.0/mingw_64/bin/moc.exe
-	C:\Qt\6.9.0\mingw_64\bin\moc.exe $(DEFINES) --include D:/QT/Qt_teamwork/411trial/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/debug/moc_predefs.h -IC:/Qt/6.9.0/mingw_64/mkspecs/win32-g++ -ID:/QT/Qt_teamwork/411trial -IC:/Qt/6.9.0/mingw_64/include -IC:/Qt/6.9.0/mingw_64/include/QtWidgets -IC:/Qt/6.9.0/mingw_64/include/QtGui -IC:/Qt/6.9.0/mingw_64/include/QtSql -IC:/Qt/6.9.0/mingw_64/include/QtNetwork -IC:/Qt/6.9.0/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++ -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed -IC:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include ..\..\todolistwindow.h -o debug\moc_todolistwindow.cpp
+	C:\Qt\6.9.0\mingw_64\bin\moc.exe $(DEFINES) --include D:/Code_space/Qt_project/workspace4/Qt_teamwork/411trial/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/debug/moc_predefs.h -IC:/Qt/6.9.0/mingw_64/mkspecs/win32-g++ -ID:/Code_space/Qt_project/workspace4/Qt_teamwork/411trial -IC:/Qt/6.9.0/mingw_64/include -IC:/Qt/6.9.0/mingw_64/include/QtWidgets -IC:/Qt/6.9.0/mingw_64/include/QtGui -IC:/Qt/6.9.0/mingw_64/include/QtSql -IC:/Qt/6.9.0/mingw_64/include/QtNetwork -IC:/Qt/6.9.0/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++ -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed -IC:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include ..\..\todolistwindow.h -o debug\moc_todolistwindow.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -2211,6 +2274,25 @@ debug/main.o: ../../main.cpp ../../mainwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtSql/QSqlError \
 		C:/Qt/6.9.0/mingw_64/include/QtSql/qsqlerror.h \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QString \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QDir \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdir.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdirlisting.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfiledevice.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdatetime.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcalendar.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfile.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfileinfo.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qtimezone.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QFile \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QJsonObject \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonobject.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonvalue.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcborvalue.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcborcommon.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/quuid.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsondocument.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonparseerror.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QJsonDocument \
 		../../emailsender.h \
 		C:/Qt/6.9.0/mingw_64/include/QtNetwork/QTcpSocket \
 		C:/Qt/6.9.0/mingw_64/include/QtNetwork/qtcpsocket.h \
@@ -2224,8 +2306,6 @@ debug/main.o: ../../main.cpp ../../mainwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtNetwork/qsslerror.h \
 		C:/Qt/6.9.0/mingw_64/include/QtNetwork/qsslcertificate.h \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/qcryptographichash.h \
-		C:/Qt/6.9.0/mingw_64/include/QtCore/qdatetime.h \
-		C:/Qt/6.9.0/mingw_64/include/QtCore/qcalendar.h \
 		C:/Qt/6.9.0/mingw_64/include/QtNetwork/qssl.h \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QFlags \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QTextStream \
@@ -2745,6 +2825,26 @@ debug/loginwindow.o: ../../loginwindow.cpp ../../loginwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtSql/QSqlError \
 		C:/Qt/6.9.0/mingw_64/include/QtSql/qsqlerror.h \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QString \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QDir \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdir.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdirlisting.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfiledevice.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdatetime.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcalendar.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfile.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfileinfo.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qtimezone.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QFile \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QJsonObject \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonobject.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonvalue.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcborvalue.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcborcommon.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qregularexpression.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/quuid.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsondocument.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonparseerror.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QJsonDocument \
 		../../emailsender.h \
 		C:/Qt/6.9.0/mingw_64/include/QtNetwork/QTcpSocket \
 		C:/Qt/6.9.0/mingw_64/include/QtNetwork/qtcpsocket.h \
@@ -2758,8 +2858,6 @@ debug/loginwindow.o: ../../loginwindow.cpp ../../loginwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtNetwork/qsslerror.h \
 		C:/Qt/6.9.0/mingw_64/include/QtNetwork/qsslcertificate.h \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/qcryptographichash.h \
-		C:/Qt/6.9.0/mingw_64/include/QtCore/qdatetime.h \
-		C:/Qt/6.9.0/mingw_64/include/QtCore/qcalendar.h \
 		C:/Qt/6.9.0/mingw_64/include/QtNetwork/qssl.h \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QFlags \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QTextStream \
@@ -2780,7 +2878,6 @@ debug/loginwindow.o: ../../loginwindow.cpp ../../loginwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qstyleoption.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qabstractspinbox.h \
 		C:/Qt/6.9.0/mingw_64/include/QtGui/qvalidator.h \
-		C:/Qt/6.9.0/mingw_64/include/QtCore/qregularexpression.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qslider.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qabstractslider.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qstyle.h \
@@ -2941,11 +3038,50 @@ debug/usermanager.o: ../../usermanager.cpp ../../usermanager.h \
 		C:/Qt/6.9.0/mingw_64/include/QtSql/QSqlError \
 		C:/Qt/6.9.0/mingw_64/include/QtSql/qsqlerror.h \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QString \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QDir \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdir.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdirlisting.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfiledevice.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qiodevice.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qspan.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/q20iterator.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdatetime.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcalendar.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qlocale.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfile.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfileinfo.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qtimezone.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QFile \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QJsonObject \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonobject.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonvalue.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcborvalue.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcborcommon.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qregularexpression.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qurl.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/quuid.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qendian.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsondocument.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonparseerror.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QJsonDocument \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QDebug \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QCryptographicHash \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/qcryptographichash.h \
-		C:/Qt/6.9.0/mingw_64/include/QtCore/qspan.h \
-		C:/Qt/6.9.0/mingw_64/include/QtCore/q20iterator.h
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QCoreApplication \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcoreapplication.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qnativeinterface.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcoreapplication_platform.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfuture.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfutureinterface.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qmutex.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qtsan_impl.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qresultstore.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfuture_impl.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qthreadpool.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qthread.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qrunnable.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qexception.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qpromise.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\usermanager.o ..\..\usermanager.cpp
 
 debug/emailsender.o: ../../emailsender.cpp ../../emailsender.h \
@@ -3341,6 +3477,25 @@ debug/adminwindow.o: ../../adminwindow.cpp ../../adminwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtSql/QSqlError \
 		C:/Qt/6.9.0/mingw_64/include/QtSql/qsqlerror.h \
 		C:/Qt/6.9.0/mingw_64/include/QtCore/QString \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QDir \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdir.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdirlisting.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfiledevice.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qdatetime.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcalendar.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfile.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qfileinfo.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qtimezone.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QFile \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QJsonObject \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonobject.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonvalue.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcborvalue.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qcborcommon.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/quuid.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsondocument.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/qjsonparseerror.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QJsonDocument \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/QVBoxLayout \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qboxlayout.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qlayout.h \

@@ -39,6 +39,11 @@ TRANSLATIONS += \
 CONFIG += lrelease
 CONFIG += embed_translations
 
+# Create and install userdata directory
+userdatadir.path = $$OUT_PWD/userdata
+userdatadir.files = userdata
+INSTALLS += userdatadir
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
