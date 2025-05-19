@@ -383,10 +383,10 @@ QWidget* MainWindow::createLabsPanel()
 
     // 实验室项目数据
     QList<QPair<QString, QPair<QString, QString>>> labs = {
-        {"量子计算", {"qpu.png", "量子计算模拟器开发框架"}},
-        {"AI助手", {"ai.png", "基于深度学习的交互式助手"}},
-        {"数据沙盒", {"sandbox.png", "安全数据实验环境"}},
-        {"3D视觉可视化", {"3d.png", "实时三维数据渲染引擎"}}
+        {"量子计算", {":/resources/qpu.png", "量子计算模拟器开发框架"}},
+        {"AI助手", {":/resources/ai.png", "基于深度学习的交互式助手"}},
+        {"数据沙盒", {":/resources/sandbox.png", "安全数据实验环境"}},
+        {"3D视觉可视化", {":/resources/3d.png", "实时三维数据渲染引擎"}}
     };
 
     // 创建卡片
@@ -614,14 +614,83 @@ QWidget*   MainWindow::createProfileCard()
     leftLayout->setContentsMargins(0, 0, 0, 0);
     leftLayout->setSpacing(16);
 
-    // 头像
+
+
+    // 外层容器
+    QWidget *avatarContainer = new QWidget;
+    avatarContainer->setFixedSize(120, 200); // 整体尺寸
+    avatarContainer->setStyleSheet(R"(
+    QWidget {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #e1e4e8;
+    }
+)");
+
+    // 使用垂直布局管理头像和状态信息
+    QVBoxLayout *promainLayout = new QVBoxLayout(avatarContainer);
+    promainLayout->setContentsMargins(5, 5, 5, 5);
+    promainLayout->setSpacing(6);
+    //edited
+
+    // 上半部分 - 放大头像
     QLabel *avatar = new QLabel;
-    QPixmap pix(":/avatar.png"); // 替换为实际路径
-    avatar->setPixmap(pix.scaled(80, 80, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    QPixmap pix(":/resources/myavatar.png");
+    avatar->setPixmap(pix.scaled(100, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     avatar->setStyleSheet(R"(
-        border-radius: 40px;
+    QLabel {
+        border-radius: 60px;
         border: 2px solid #e1e4e8;
-    )");
+        background-color: transparent;  // 新增
+        overflow: hidden;        // 新增
+    }
+)");
+    avatar->setAlignment(Qt::AlignCenter);
+    promainLayout->addWidget(avatar);
+
+    // 下半部分 - 信息区域
+    QVBoxLayout *proinfoLayout = new QVBoxLayout;
+    proinfoLayout->setSpacing(2);
+    //8
+
+    // 地区显示
+    QLabel *region = new QLabel("中国 · 北京");
+    region->setAlignment(Qt::AlignCenter);
+    region->setStyleSheet("font-size: 12px; color: #666;");
+    proinfoLayout->addWidget(region);
+
+    // 状态显示（仿微信样式）
+    QHBoxLayout *statusLayout = new QHBoxLayout;
+    statusLayout->setContentsMargins(0, 0, 0, 0);
+    statusLayout->setSpacing(2);
+    //6
+
+    QLabel *statusIcon = new QLabel;
+    statusIcon->setFixedSize(10, 8);
+    statusIcon->setStyleSheet(R"(
+    background-color: #7fff00;
+    border-radius: 4px;
+)");
+
+    QLabel *statusText = new QLabel("摸鱼中");
+    statusText->setStyleSheet("font-size: 12px; color: #666;");
+
+    statusLayout->addStretch();
+    statusLayout->addWidget(statusIcon);
+    statusLayout->addWidget(statusText);
+    statusLayout->addStretch();
+
+    proinfoLayout->addLayout(statusLayout);
+    promainLayout->addLayout(proinfoLayout);
+
+    // // 头像
+    // QLabel *avatar = new QLabel;
+    // QPixmap pix(":/resources/myavatar.png"); // 替换为实际路径
+    // avatar->setPixmap(pix.scaled(80, 80, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    // avatar->setStyleSheet(R"(
+    //     border-radius: 40px;
+    //     border: 2px solid #e1e4e8;
+    // )");
 
     // 个人信息
     QWidget *info = new QWidget;
@@ -642,7 +711,7 @@ QWidget*   MainWindow::createProfileCard()
     infoLayout->addWidget(bio);
     infoLayout->addStretch();
 
-    leftLayout->addWidget(avatar);
+    leftLayout->addWidget(avatarContainer);
     leftLayout->addWidget(info);
 
     // ========== 右侧日历区域 ==========
@@ -714,7 +783,27 @@ QWidget*   MainWindow::createProfileCard()
 
     // 生成日期（示例数据）
     int dayCount = 1;
-    for (int row = 0; row < 6; ++row) {
+
+    for (int row = 0; row < 5; ++row) {
+        if(row == 0){
+            for (int col = 4; col < 7; ++col) {
+                QLabel *dayLabel = new QLabel(QString::number(dayCount));
+                dayLabel->setAlignment(Qt::AlignCenter);
+
+                // 随机生成活跃日期示例
+                bool isActive = QRandomGenerator::global()->bounded(5) == 0;
+                if (isActive) {
+                    dayLabel->setProperty("class", "active");
+                }
+
+                dayLabel->setStyleSheet("QLabel { color: #24292e; }"
+                                        "QLabel.active { background: #2188ff; color: white; }");
+
+                gridLayout->addWidget(dayLabel, row, col);
+                dayCount++;
+            }
+        }
+        else{
         for (int col = 0; col < 7; ++col) {
             QLabel *dayLabel = new QLabel(QString::number(dayCount));
             dayLabel->setAlignment(Qt::AlignCenter);
@@ -731,6 +820,7 @@ QWidget*   MainWindow::createProfileCard()
             gridLayout->addWidget(dayLabel, row, col);
             dayCount++;
             if (dayCount > 31) break;
+        }
         }
     }
 

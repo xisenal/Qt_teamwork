@@ -12,5 +12,10 @@
         <file>resources/Swivel.jpg</file>
         <file>resources/Wheels.jpg</file>
         <file>resources/user.png</file>
+    	<file>resources/myavatar.png</file>
+    	<file>resources/ai.png</file>
+    	<file>resources/sandbox.png</file>
+    	<file>resources/3d.png</file>
+    	<file>resources/qpu.png</file>
     </qresource>
 </RCC>
