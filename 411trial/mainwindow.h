@@ -19,6 +19,7 @@
 #include <QPixmap>
 #include <QStackedWidget>
 #include <QMessageBox>
+#include <QMovie>
 
 class UserInfoDialog : public QDialog
 {

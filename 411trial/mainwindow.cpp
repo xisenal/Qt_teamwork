@@ -618,7 +618,7 @@ QWidget*   MainWindow::createProfileCard()
 
     // 外层容器
     QWidget *avatarContainer = new QWidget;
-    avatarContainer->setFixedSize(120, 200); // 整体尺寸
+    avatarContainer->setFixedSize(150, 240); // 整体尺寸
     avatarContainer->setStyleSheet(R"(
     QWidget {
         background: white;
@@ -636,7 +636,7 @@ QWidget*   MainWindow::createProfileCard()
     // 上半部分 - 放大头像
     QLabel *avatar = new QLabel;
     QPixmap pix(":/resources/myavatar.png");
-    avatar->setPixmap(pix.scaled(100, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    avatar->setPixmap(pix.scaled(120, 120, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     avatar->setStyleSheet(R"(
     QLabel {
         border-radius: 60px;
@@ -646,7 +646,12 @@ QWidget*   MainWindow::createProfileCard()
     }
 )");
     avatar->setAlignment(Qt::AlignCenter);
+    // 调整容器内边距（原10,10,10,10）
+
     promainLayout->addWidget(avatar);
+    promainLayout->setContentsMargins(12, 16, 12, 16); // 增加上下边距
+    promainLayout->setSpacing(16);  // 原12 → 增加垂直间距
+
 
     // 下半部分 - 信息区域
     QVBoxLayout *proinfoLayout = new QVBoxLayout;
@@ -986,26 +991,40 @@ MainWindow::MainWindow(QWidget *parent)
     // 创建GitHub风格主页
     githubHomePage = createGithubStylePage();
 
-    // 保留原有内容区域作为默认页
-    defaultContent = new QTextEdit();
-    defaultContent->setStyleSheet(R"(
-    QTextEdit {
-        background: white;
-        border: none;
-        font-size: 14px;
-        padding: 24px;
-        color: #212121;
+//     // 保留原有内容区域作为默认页
+//     defaultContent = new QTextEdit();
+//     defaultContent->setStyleSheet(R"(
+//     QTextEdit {
+//         background: white;
+//         border: none;
+//         font-size: 14px;
+//         padding: 24px;
+//         color: #212121;
+//     }
+// )");
+
+//     //可能可以设置背景（
+//     //defaultContent->setStyleSheet(/* 原有样式保持不变 */);
+//     // 方式2：设置中央部件样式
+
+
+    QLabel *welcomeLabel = new QLabel();
+    QMovie *welcomeMovie = new QMovie(":/animations/welcome_ed.gif");  // 资源需添加到.qrc文件
+    welcomeLabel->setMovie(welcomeMovie);
+    welcomeMovie->start();
+
+    // 设置控件样式（替换原有QTextEdit样式）
+    welcomeLabel->setStyleSheet(R"(
+    QLabel {
+        background: #1a1a1a;  /* 深色背景 */
+        qproperty-alignment: AlignCenter;  /* 内容居中 */
     }
-)");
-
-    //可能可以设置背景（
-    //defaultContent->setStyleSheet(/* 原有样式保持不变 */);
-    // 方式2：设置中央部件样式
+    )");
 
 
-
-    // 将页面添加到堆栈
-    contentStack->addWidget(defaultContent);  // 索引0
+//     // 将页面添加到堆栈
+//     contentStack->addWidget(defaultContent);  // 索引0
+    contentStack->addWidget(welcomeLabel);  // 索引0
     contentStack->addWidget(githubHomePage);   // 索引1
 
 

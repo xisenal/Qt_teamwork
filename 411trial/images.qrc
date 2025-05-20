@@ -17,5 +17,8 @@
     	<file>resources/sandbox.png</file>
     	<file>resources/3d.png</file>
     	<file>resources/qpu.png</file>
+        <file>animations/welcome.gif</file>
+        <file>animations/welcome_e.gif</file>
+        <file>animations/welcome_ed.gif</file>
     </qresource>
 </RCC>
