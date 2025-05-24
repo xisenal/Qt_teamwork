@@ -3,6 +3,8 @@
 
 #include "canvas.h"
 #include "todolistwindow.h"
+#include "apidialog.h"
+
 
 #include <QMainWindow>
 #include <QPushButton>
@@ -63,6 +65,8 @@ private:
     // static const QString normalButtonStyle;
     // static const QString activeButtonStyle;
 
+    //ApiDialog *apiDialog; // 弹窗实例
+
 
 
 
@@ -79,6 +83,7 @@ private slots:
     void updateSubMenuPosition();
     void showTodoList();
     void handleLabButtonClick();
+    void onProjectButtonClicked(); // 响应按钮点击
 
 
 
@@ -88,6 +93,8 @@ private:
     QWidget *subMenu = nullptr;
     QPushButton *labBtn = nullptr;
     QPushButton *todoListBtn = nullptr;
+
+    QPushButton *searchbtn = nullptr;
     bool isSubMenuVisible = false;
     TodoListWindow *todoListWindow = nullptr;
     
@@ -100,6 +107,8 @@ private:
     QScrollArea* subMenuScrollArea;
 
     QPushButton *homeBtn = nullptr; // 保存主页按钮指针
+
+    QPointer<ApiDialog> apiDialog = nullptr; // 初始化为 nullptr
 
 
     // 窗口拖动相关

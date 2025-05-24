@@ -12,6 +12,7 @@ CONFIG += c++17
 RESOURCES += images.qrc
 
 SOURCES += \
+    apidialog.cpp \
     canvas.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -22,6 +23,7 @@ SOURCES += \
     todolistwindow.cpp
 
 HEADERS += \
+    apidialog.h \
     canvas.h \
     mainwindow.h \
     loginwindow.h \
@@ -31,7 +33,9 @@ HEADERS += \
     todolistwindow.h
 
 FORMS += \
+    apidialog.ui \
     canvas.ui \
+    apidialog.ui \
     mainwindow.ui
 
 TRANSLATIONS += \

@@ -1209,6 +1209,14 @@ MainWindow::MainWindow(QWidget *parent)
             todoListBtn = btn;  // 保存To Do List按钮指针
             connect(btn, &QPushButton::clicked, this, &MainWindow::showTodoList);
         }
+
+        else if (item.first.contains("项目")){
+
+            searchbtn = btn;
+            //在哪里声明？？？？？？
+            connect(searchbtn, &QPushButton::clicked, this, &MainWindow::onProjectButtonClicked);
+
+        }
     }
 
     navLayout->addStretch();
@@ -1566,3 +1574,11 @@ void MainWindow::handleLabButtonClick()
 }
 
 
+
+void MainWindow::onProjectButtonClicked() {
+    if (!apiDialog) {
+        apiDialog = new ApiDialog(this); // 延迟初始化
+    }
+    apiDialog->show(); // 显示弹窗
+    //apiDialog->activateWindow(); // 激活窗口焦点
+}
