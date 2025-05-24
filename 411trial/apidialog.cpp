@@ -30,7 +30,7 @@ void ApiDialog::onSearchButtonClicked()
     QUrl url("https://serpapi.com/search");
     QUrlQuery params;
     params.addQueryItem("q", keyword);
-    params.addQueryItem("api_key", "d0e75c248bd4209b25e41b7961260175699842f4d4730dacc3196ddb3893d83f");
+    params.addQueryItem("api_key", " can't tell you(doge");
     params.addQueryItem("engine", "google_scholar");
     params.addQueryItem("hl", "en");  // 确保语言参数正确
     url.setQuery(params);
