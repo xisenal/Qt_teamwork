@@ -14,6 +14,7 @@ class ApiDialog : public QDialog
 public:
     explicit ApiDialog(QWidget *parent = nullptr);
     ~ApiDialog();
+    void setupTable();
 private slots:
     void onSearchButtonClicked();                     // 触发API请求
     void onApiResponseReceived(QNetworkReply *reply); // 处理API响应
