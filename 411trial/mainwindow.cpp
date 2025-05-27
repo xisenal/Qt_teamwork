@@ -8,6 +8,7 @@
 #include <QGraphicsDropShadowEffect>
 #include <QFormLayout>
 #include <QRandomGenerator>
+#include <QInputDialog>
 
 UserInfoDialog::UserInfoDialog(const QString &email, QWidget *parent)
     : QDialog(parent)
@@ -782,6 +783,234 @@ QWidget* MainWindow::createActivityTimeline()
     return timeline;
 }
 
+
+
+//5.27
+// 可编辑的状态标签类
+
+
+
+// // 修改你的原代码，只需要替换QLabel创建部分：
+// void setupStatusDisplay() {
+//     // 状态显示（仿微信样式）
+//     QHBoxLayout *statusLayout = new QHBoxLayout;
+//     statusLayout->setContentsMargins(0, 0, 0, 0);
+//     statusLayout->setSpacing(2);
+
+//     // 状态图标（保持不变）
+//     QLabel *statusIcon = new QLabel;
+//     statusIcon->setFixedSize(10, 8);
+//     statusIcon->setStyleSheet(R"(
+//         background-color: #7fff00;
+//         border-radius: 4px;
+//     )");
+
+//     // 将原来的QLabel替换为EditableStatusLabel
+//     EditableStatusLabel *statusText = new EditableStatusLabel("摸鱼中");
+//     statusText->setStyleSheet("font-size: 12px; color: #666;");
+
+//     // 可选：连接状态改变信号
+//     connect(statusText, &EditableStatusLabel::statusChanged,
+//             [statusIcon](const QString &newStatus) {
+//                 //qDebug() << "状态更新为:" << newStatus;
+
+//                 // 可以根据状态文本改变图标颜色
+//                 QString color = "#7fff00"; // 默认绿色
+//                 if (newStatus.contains("工作") || newStatus.contains("忙")) {
+//                     color = "#ff4444"; // 红色
+//                 } else if (newStatus.contains("学习")) {
+//                     color = "#4488ff"; // 蓝色
+//                 } else if (newStatus.contains("休息")) {
+//                     color = "#ffaa00"; // 橙色
+//                 }
+
+//                 statusIcon->setStyleSheet(QString(R"(
+//             background-color: %1;
+//             border-radius: 4px;
+//         )").arg(color));
+//             });
+
+//     // 添加到布局（保持原有结构）
+//     statusLayout->addWidget(statusIcon);
+//     statusLayout->addWidget(statusText);
+
+//     // 可选：从配置文件加载保存的状态
+//     QSettings settings;
+//     QString savedStatus = settings.value("user_status", "摸鱼中").toString();
+//     statusText->setText(savedStatus);
+// }
+
+
+// 简化版可编辑状态标签（不需要MOC）
+class EditableStatusLabel : public QLabel {
+public:
+    EditableStatusLabel(const QString &text, QWidget *parent = nullptr)
+        : QLabel(text, parent) {
+        setCursor(Qt::PointingHandCursor);
+        setToolTip("点击编辑状态");
+    }
+
+    // 设置状态改变回调函数
+    void setStatusChangedCallback(std::function<void(const QString&)> callback) {
+        statusChangedCallback = callback;
+    }
+
+protected:
+    void mousePressEvent(QMouseEvent *event) override {
+        if (event->button() == Qt::LeftButton) {
+            showEditDialog();
+        }
+        QLabel::mousePressEvent(event);
+    }
+
+private:
+    std::function<void(const QString&)> statusChangedCallback;
+
+    void showEditDialog() {
+        bool ok;
+        QString newStatus = QInputDialog::getText(this,
+                                                  "编辑状态",
+                                                  "请输入新的状态:",
+                                                  QLineEdit::Normal,
+                                                  text(),
+                                                  &ok);
+
+        if (ok && !newStatus.isEmpty()) {
+            setText(newStatus);
+
+            // 调用回调函数
+            if (statusChangedCallback) {
+                statusChangedCallback(newStatus);
+            }
+
+            // 保存到配置
+            QSettings settings;
+            settings.setValue("user_status", newStatus);
+        }
+    }
+};
+
+
+
+class StatusEditDialog : public QDialog {
+    Q_OBJECT
+
+public:
+    StatusEditDialog(const QString &currentStatus, QWidget *parent = nullptr)
+        : QDialog(parent) {
+        setWindowTitle("编辑状态");
+        setFixedSize(250, 120);
+        setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
+
+        QVBoxLayout *layout = new QVBoxLayout(this);
+
+        QLabel *label = new QLabel("请输入您的状态:");
+        label->setStyleSheet("font-size: 12px; color: #333; margin-bottom: 5px;");
+
+        lineEdit = new QLineEdit(currentStatus);
+        lineEdit->setStyleSheet(R"(
+            QLineEdit {
+                padding: 8px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 12px;
+            }
+            QLineEdit:focus {
+                border-color: #7fff00;
+            }
+        )");
+        lineEdit->selectAll();
+
+        QHBoxLayout *btnLayout = new QHBoxLayout;
+        QPushButton *okBtn = new QPushButton("确定");
+        QPushButton *cancelBtn = new QPushButton("取消");
+
+        okBtn->setStyleSheet(R"(
+            QPushButton {
+                background-color: #7fff00;
+                color: white;
+                border: none;
+                padding: 6px 15px;
+                border-radius: 3px;
+                font-size: 12px;
+            }
+            QPushButton:hover {
+                background-color: #6fd800;
+            }
+        )");
+
+        cancelBtn->setStyleSheet(R"(
+            QPushButton {
+                background-color: #f5f5f5;
+                color: #666;
+                border: 1px solid #ddd;
+                padding: 6px 15px;
+                border-radius: 3px;
+                font-size: 12px;
+            }
+            QPushButton:hover {
+                background-color: #e8e8e8;
+            }
+        )");
+
+        btnLayout->addStretch();
+        btnLayout->addWidget(cancelBtn);
+        btnLayout->addWidget(okBtn);
+
+        layout->addWidget(label);
+        layout->addWidget(lineEdit);
+        layout->addSpacing(10);
+        layout->addLayout(btnLayout);
+
+        connect(okBtn, &QPushButton::clicked, this, &QDialog::accept);
+        connect(cancelBtn, &QPushButton::clicked, this, &QDialog::reject);
+        connect(lineEdit, &QLineEdit::returnPressed, this, &QDialog::accept);
+
+        lineEdit->setFocus();
+    }
+
+    QString getStatusText() const {
+        return lineEdit->text().trimmed();
+    }
+
+private:
+    QLineEdit *lineEdit;
+};
+
+
+class EditableStatusLabelCustom : public QLabel {
+    Q_OBJECT
+
+public:
+    EditableStatusLabelCustom(const QString &text, QWidget *parent = nullptr)
+        : QLabel(text, parent) {
+        setCursor(Qt::PointingHandCursor);
+        setToolTip("点击编辑状态");
+    }
+
+protected:
+    void mousePressEvent(QMouseEvent *event) override {
+        if (event->button() == Qt::LeftButton) {
+            StatusEditDialog dialog(text(), this);
+            if (dialog.exec() == QDialog::Accepted) {
+                QString newStatus = dialog.getStatusText();
+                if (!newStatus.isEmpty()) {
+                    setText(newStatus);
+                    emit statusChanged(newStatus);
+
+                    // 保存状态
+                    QSettings settings;
+                    settings.setValue("user_status", newStatus);
+                }
+            }
+        }
+        QLabel::mousePressEvent(event);
+    }
+
+signals:
+    void statusChanged(const QString &newStatus);
+};
+
 QWidget*   MainWindow::createProfileCard()
 {
     QWidget *profileCard = new QWidget;
@@ -818,7 +1047,7 @@ QWidget*   MainWindow::createProfileCard()
     QWidget *leftPanel = new QWidget;
     QHBoxLayout *leftLayout = new QHBoxLayout(leftPanel);
     leftLayout->setContentsMargins(0, 0, 0, 0);
-    leftLayout->setSpacing(16);
+    leftLayout->setSpacing(10);
 
 
 
@@ -870,26 +1099,78 @@ QWidget*   MainWindow::createProfileCard()
     region->setStyleSheet("font-size: 12px; color: #666;");
     proinfoLayout->addWidget(region);
 
+    // // 状态显示（仿微信样式）
+    // QHBoxLayout *statusLayout = new QHBoxLayout;
+    // statusLayout->setContentsMargins(0, 0, 0, 0);
+    // statusLayout->setSpacing(2);
+    // //6
+
+    // QLabel *statusIcon = new QLabel;
+    // statusIcon->setFixedSize(10, 8);
+    // statusIcon->setStyleSheet(R"(
+    // background-color: #7fff00;
+    // border-radius: 4px;
+
+
     // 状态显示（仿微信样式）
     QHBoxLayout *statusLayout = new QHBoxLayout;
     statusLayout->setContentsMargins(0, 0, 0, 0);
     statusLayout->setSpacing(2);
-    //6
 
+    // 状态图标（保持不变）
     QLabel *statusIcon = new QLabel;
     statusIcon->setFixedSize(10, 8);
     statusIcon->setStyleSheet(R"(
-    background-color: #7fff00;
-    border-radius: 4px;
-)");
+        background-color: #7fff00;
+        border-radius: 4px;
+    )");
 
-    QLabel *statusText = new QLabel("摸鱼中");
+    // 将原来的QLabel替换为EditableStatusLabel
+    EditableStatusLabel *statusText = new EditableStatusLabel("摸鱼中");
     statusText->setStyleSheet("font-size: 12px; color: #666;");
 
-    statusLayout->addStretch();
+    // 设置状态改变回调
+    statusText->setStatusChangedCallback([statusIcon](const QString &newStatus) {
+        qDebug() << "状态更新为:" << newStatus;
+
+        // 可以根据状态文本改变图标颜色
+        QString color = "#7fff00"; // 默认绿色
+        if (newStatus.contains("工作") || newStatus.contains("忙")) {
+            color = "#ff4444"; // 红色
+        } else if (newStatus.contains("学习")) {
+            color = "#4488ff"; // 蓝色
+        } else if (newStatus.contains("休息")) {
+            color = "#ffaa00"; // 橙色
+        }
+
+        statusIcon->setStyleSheet(QString(R"(
+            background-color: %1;
+            border-radius: 4px;
+        )").arg(color));
+    });
+
+    // 添加到布局（保持原有结构）
     statusLayout->addWidget(statusIcon);
     statusLayout->addWidget(statusText);
-    statusLayout->addStretch();
+
+    // 从配置文件加载保存的状态
+    QSettings settings;
+    QString savedStatus = settings.value("user_status", "摸鱼中").toString();
+    statusText->setText(savedStatus);
+
+
+
+    //setupStatusDisplay(proinfoLayout);
+
+
+
+    // QLabel *statusText = new QLabel("摸鱼中");
+    // statusText->setStyleSheet("font-size: 12px; color: #666;");
+
+    // statusLayout->addStretch();
+    // statusLayout->addWidget(statusIcon);
+    // statusLayout->addWidget(statusText);
+    // statusLayout->addStretch();
 
     proinfoLayout->addLayout(statusLayout);
     promainLayout->addLayout(proinfoLayout);
