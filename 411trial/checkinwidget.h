@@ -1,3 +1,6 @@
+#ifndef COMPACTCHECKINWIDGET_H
+#define COMPACTCHECKINWIDGET_H
+
 
 // #include <QWidget>
 // #include <QPushButton>
@@ -111,3 +114,7 @@ private:
     QStringList m_luckList;
     QStringList m_quoteList;
 };
+
+
+
+#endif // COMPACTCHECKINWIDGET_H

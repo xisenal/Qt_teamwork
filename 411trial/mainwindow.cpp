@@ -918,7 +918,7 @@ QWidget*   MainWindow::createProfileCard()
     bio->setWordWrap(true);
 
     m_checkInWidget = new CompactCheckInWidget(this);
-    m_checkInWidget->setFixedHeight(120); // 设置合适高度
+    m_checkInWidget->setFixedHeight(200); // 设置合适高度
 
     // 然后添加到布局中：
     //infoLayout->addWidget(m_checkInWidget);

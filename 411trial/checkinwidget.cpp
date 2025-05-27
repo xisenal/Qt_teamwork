@@ -282,9 +282,9 @@ CompactCheckInWidget::CompactCheckInWidget(QWidget *parent)
     , m_settings(new QSettings("MyApp", "CheckIn", this))
     , m_checkInStreak(0)
 {
-    setupUI();
-    loadSettings();
-    updateUI();
+    // setupUI();
+    // loadSettings();
+    // updateUI();
 
     // 初始化数据
     m_luckList << "大吉" << "中吉" << "小吉" << "吉" << "半吉" << "末吉"
@@ -306,12 +306,30 @@ CompactCheckInWidget::CompactCheckInWidget(QWidget *parent)
                 << "今天写指针一定不会报错qwq"
                 << "C++还是python,难以逃脱的qwq";
 
+    setupUI();
+    loadSettings();
+
+    // 如果今天已经签到过，但签运和名言为空，重新生成
+    QDate today = QDate::currentDate();
+    if (m_lastCheckInDate == today) {
+        if (m_todayLuck.isEmpty()) {
+            m_todayLuck = getRandomLuck();
+        }
+        if (m_todayQuote.isEmpty()) {
+            m_todayQuote = getDailyQuote();
+        }
+        saveSettings(); // 保存生成的内容
+    }
+
+    updateUI();
+
 }
 
 CompactCheckInWidget::~CompactCheckInWidget()
 {
     saveSettings();
 }
+
 
 void CompactCheckInWidget::setupUI()
 {
@@ -344,17 +362,23 @@ void CompactCheckInWidget::setupUI()
         }
     )");
 
+    // 主布局 - 调整边距和间距
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
-    mainLayout->setContentsMargins(12, 8, 12, 8);
-    mainLayout->setSpacing(6);
+    mainLayout->setContentsMargins(10, 8, 10, 8);  // 适中的边距
+    mainLayout->setSpacing(3);                        // 适中的间距
 
     // 标题行
     QHBoxLayout *titleLayout = new QHBoxLayout();
+    titleLayout->setSpacing(3);  // 标题行内间距
+
     QLabel *titleLabel = new QLabel("📅 每日签到");
     titleLabel->setStyleSheet("font-weight: 500; color: #24292e;");
+    titleLabel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 
     m_streakLabel = new QLabel("连续0天");
     m_streakLabel->setStyleSheet("color: #586069; font-size: 11px;");
+    m_streakLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    m_streakLabel->setMinimumWidth(60);  // 确保有足够宽度显示文字
 
     titleLayout->addWidget(titleLabel);
     titleLayout->addStretch();
@@ -362,11 +386,16 @@ void CompactCheckInWidget::setupUI()
 
     // 签到按钮行
     QHBoxLayout *btnLayout = new QHBoxLayout();
+    btnLayout->setSpacing(8);
+
     m_checkInBtn = new QPushButton("签到");
-    m_checkInBtn->setFixedSize(60, 28);
+    m_checkInBtn->setFixedSize(65, 30);  // 稍微调大一点
+    m_checkInBtn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
     m_statusLabel = new QLabel("");
     m_statusLabel->setStyleSheet("color: #28a745; font-size: 11px;");
+    m_statusLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    m_statusLabel->setMinimumHeight(20);  // 确保有足够高度
 
     btnLayout->addWidget(m_checkInBtn);
     btnLayout->addWidget(m_statusLabel);
@@ -374,20 +403,35 @@ void CompactCheckInWidget::setupUI()
 
     // 签运显示
     m_luckLabel = new QLabel("");
-    m_luckLabel->setStyleSheet("color: #e36209; font-weight: 500;");
+    m_luckLabel->setStyleSheet("color: #e36209; font-weight: 500; font-size: 11px;");
+    m_luckLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    m_luckLabel->setMinimumHeight(20);  // 确保显示高度
+    m_luckLabel->setWordWrap(true);
 
     // 每日一句
     m_quoteLabel = new QLabel("");
-    m_quoteLabel->setStyleSheet("color: #586069; font-size: 11px; font-style: italic;");
+    m_quoteLabel->setStyleSheet("color: #586069; font-size: 10px; font-style: italic; line-height: 1.2;");
     m_quoteLabel->setWordWrap(true);
-    m_quoteLabel->setMaximumHeight(30);
+    m_quoteLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    m_quoteLabel->setMinimumHeight(20);  // 确保能显示两行文字
+    m_quoteLabel->setMaximumHeight(48);  // 限制最大高度
+    m_quoteLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);  // 顶部对齐
 
     mainLayout->addLayout(titleLayout);
     mainLayout->addLayout(btnLayout);
     mainLayout->addWidget(m_luckLabel);
     mainLayout->addWidget(m_quoteLabel);
 
+    // 设置整个组件的最小尺寸
+    setMinimumSize(280, 130);
+    setMaximumHeight(150);
+
     connect(m_checkInBtn, &QPushButton::clicked, this, &CompactCheckInWidget::onCheckInClicked);
+
+// 调试信息 - 可以临时启用来检查布局
+#ifdef QT_DEBUG
+// setStyleSheet(styleSheet() + "QWidget { border: 1px solid red; }");  // 调试时显示边界
+#endif
 }
 
 void CompactCheckInWidget::loadSettings()
@@ -463,7 +507,178 @@ void CompactCheckInWidget::updateUI()
         m_checkInBtn->setEnabled(false);
         m_checkInBtn->setText("已签");
         m_statusLabel->setText("✓ 已完成");
+
+        // 确保今日的签运和名言存在
+        if (m_todayLuck.isEmpty()) {
+            m_todayLuck = getRandomLuck();
+        }
+        if (m_todayQuote.isEmpty()) {
+            m_todayQuote = getDailyQuote();
+        }
+
         m_luckLabel->setText(QString("🎯 今日签运：%1").arg(m_todayLuck));
         m_quoteLabel->setText(QString("💭 %1").arg(m_todayQuote));
     }
 }
+
+
+
+
+
+
+// void CompactCheckInWidget::setupUI()
+// {
+//     // 设置整体样式，与你的界面风格一致
+//     setStyleSheet(R"(
+//         QWidget {
+//             background: white;
+//             border-radius: 6px;
+//             border: 1px solid #e1e4e8;
+//         }
+//         QPushButton {
+//             background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #2188ff, stop:1 #0366d6);
+//             border: none;
+//             color: white;
+//             font-size: 12px;
+//             font-weight: 500;
+//             border-radius: 4px;
+//             padding: 6px 12px;
+//         }
+//         QPushButton:hover {
+//             background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #0366d6, stop:1 #044289);
+//         }
+//         QPushButton:disabled {
+//             background: #f1f3f4;
+//             color: #6a737d;
+//         }
+//         QLabel {
+//             color: #24292e;
+//             font-size: 12px;
+//         }
+//     )");
+
+//     QVBoxLayout *mainLayout = new QVBoxLayout(this);
+//     mainLayout->setContentsMargins(12, 8, 12, 8);
+//     mainLayout->setSpacing(6);
+
+//     // 标题行
+//     QHBoxLayout *titleLayout = new QHBoxLayout();
+//     QLabel *titleLabel = new QLabel("📅 每日签到");
+//     titleLabel->setStyleSheet("font-weight: 500; color: #24292e;");
+
+//     m_streakLabel = new QLabel("连续0天");
+//     m_streakLabel->setStyleSheet("color: #586069; font-size: 6px;");
+
+//     titleLayout->addWidget(titleLabel);
+//     titleLayout->addStretch();
+//     titleLayout->addWidget(m_streakLabel);
+
+//     // 签到按钮行
+//     QHBoxLayout *btnLayout = new QHBoxLayout();
+//     m_checkInBtn = new QPushButton("签到");
+//     m_checkInBtn->setFixedSize(60, 28);
+
+//     m_statusLabel = new QLabel("");
+//     m_statusLabel->setStyleSheet("color: #28a745; font-size: 11px;");
+
+//     btnLayout->addWidget(m_checkInBtn);
+//     btnLayout->addWidget(m_statusLabel);
+//     btnLayout->addStretch();
+
+//     // 签运显示
+//     m_luckLabel = new QLabel("");
+//     m_luckLabel->setStyleSheet("color: #e36209; font-weight: 500;");
+
+//     // 每日一句
+//     m_quoteLabel = new QLabel("");
+//     m_quoteLabel->setStyleSheet("color: #586069; font-size: 11px; font-style: italic;");
+//     m_quoteLabel->setWordWrap(true);
+//     m_quoteLabel->setMaximumHeight(30);
+
+//     mainLayout->addLayout(titleLayout);
+//     mainLayout->addLayout(btnLayout);
+//     mainLayout->addWidget(m_luckLabel);
+//     mainLayout->addWidget(m_quoteLabel);
+
+//     connect(m_checkInBtn, &QPushButton::clicked, this, &CompactCheckInWidget::onCheckInClicked);
+// }
+
+// void CompactCheckInWidget::loadSettings()
+// {
+//     m_lastCheckInDate = m_settings->value("lastCheckInDate", QDate()).toDate();
+//     m_checkInStreak = m_settings->value("checkInStreak", 0).toInt();
+//     m_todayLuck = m_settings->value("todayLuck", "").toString();
+//     m_todayQuote = m_settings->value("todayQuote", "").toString();
+// }
+
+// void CompactCheckInWidget::saveSettings()
+// {
+//     m_settings->setValue("lastCheckInDate", m_lastCheckInDate);
+//     m_settings->setValue("checkInStreak", m_checkInStreak);
+//     m_settings->setValue("todayLuck", m_todayLuck);
+//     m_settings->setValue("todayQuote", m_todayQuote);
+// }
+
+// bool CompactCheckInWidget::canCheckInToday()
+// {
+//     QDate today = QDate::currentDate();
+//     return m_lastCheckInDate != today;
+// }
+
+// QString CompactCheckInWidget::getRandomLuck()
+// {
+//     int index = QRandomGenerator::global()->bounded(m_luckList.size());
+//     return m_luckList[index];
+// }
+
+// QString CompactCheckInWidget::getDailyQuote()
+// {
+//     QDate today = QDate::currentDate();
+//     uint seed = today.toJulianDay();
+//     QRandomGenerator generator(seed);
+//     int index = generator.bounded(m_quoteList.size());
+//     return m_quoteList[index];
+// }
+
+// void CompactCheckInWidget::onCheckInClicked()
+// {
+//     if (!canCheckInToday()) {
+//         return;
+//     }
+
+//     QDate today = QDate::currentDate();
+
+//     if (m_lastCheckInDate.isValid() && m_lastCheckInDate.addDays(1) == today) {
+//         m_checkInStreak++;
+//     } else {
+//         m_checkInStreak = 1;
+//     }
+
+//     m_lastCheckInDate = today;
+//     m_todayLuck = getRandomLuck();
+//     m_todayQuote = getDailyQuote();
+
+//     saveSettings();
+//     updateUI();
+// }
+
+// void CompactCheckInWidget::updateUI()
+// {
+//     m_streakLabel->setText(QString("连续%1天").arg(m_checkInStreak));
+
+//     if (canCheckInToday()) {
+//         m_checkInBtn->setEnabled(true);
+//         m_checkInBtn->setText("签到");
+//         m_statusLabel->setText("");
+//         m_luckLabel->setText("");
+//         m_quoteLabel->setText("");
+//     } else {
+//         m_checkInBtn->setEnabled(false);
+//         m_checkInBtn->setText("已签");
+//         m_statusLabel->setText("✓ 已完成");
+//         m_luckLabel->setText(QString("🎯 今日签运：%1").arg(m_todayLuck));
+//         m_quoteLabel->setText(QString("💭 %1").arg(m_todayQuote));
+//     }
+// }
+
+
