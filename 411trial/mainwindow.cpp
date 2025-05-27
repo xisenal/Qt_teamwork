@@ -74,6 +74,114 @@ UserInfoDialog::UserInfoDialog(const QString &email, QWidget *parent)
         "}");
 }
 
+// void MainWindow::createSubMenu() {
+//     subMenu = new QWidget(this);
+//     subMenu->setStyleSheet(
+//         "QWidget {"
+//         "   background: #FFFFFF;"
+//         "   border: 1px solid #E0E0E0;"
+//         "   border-radius: 4px;"
+//         "   box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
+//         "}"
+//         "QLabel {"
+//         "   color: #424242;"
+//         "}"
+//         "QToolButton {"
+//         "   color: #424242;"
+//         "   border: none;"
+//         "   padding: 4px;"
+//         "}"
+//         "QToolButton:hover {"
+//         "   background: #F5F5F5;"
+//         "}");
+//     subMenu->setFixedWidth(150);
+//     subMenu->setFixedHeight(730);
+//     subMenu->hide();
+
+//     QVBoxLayout *mainLayout = new QVBoxLayout(subMenu);
+//     mainLayout->setContentsMargins(4, 4, 4, 4);
+//     mainLayout->setSpacing(4);
+
+//     const QStringList items = {"Owner", "Contributor", "Visitor"};
+//     foreach (const QString &text, items) {
+//         // 创建可折叠面板
+//         QWidget *panel = new QWidget(subMenu);
+//         QVBoxLayout *panelLayout = new QVBoxLayout(panel);
+//         panelLayout->setContentsMargins(0, 0, 0, 0);
+//         panelLayout->setSpacing(0);
+
+//         // 标题栏
+//         QWidget *header = new QWidget(panel);
+//         QHBoxLayout *headerLayout = new QHBoxLayout(header);
+//         headerLayout->setContentsMargins(4, 4, 4, 4);
+//         headerLayout->setSpacing(4);
+
+//         // 折叠按钮
+//         QToolButton *toggleBtn = new QToolButton(header);
+//         toggleBtn->setArrowType(Qt::RightArrow);
+//         toggleBtn->setObjectName("toggleBtn");
+//         toggleBtn->setFixedSize(16, 16);
+
+//         // 标题文本
+//         QLabel *titleLabel = new QLabel(text, header);
+
+//         // 添加按钮
+//         QToolButton *addBtn = new QToolButton(header);
+//         addBtn->setText("+");
+//         addBtn->setFixedSize(16, 16);
+
+//         headerLayout->addWidget(toggleBtn);
+//         headerLayout->addWidget(titleLabel);
+//         headerLayout->addStretch();
+//         headerLayout->addWidget(addBtn);
+
+//         // 内容区域
+//         QWidget *content = new QWidget(panel);
+//         QVBoxLayout *contentLayout = new QVBoxLayout(content);
+//         contentLayout->setContentsMargins(24, 2, 2, 2); // 添加左侧缩进
+//         content->hide();
+
+//         panelLayout->addWidget(header);
+//         panelLayout->addWidget(content);
+//         mainLayout->addWidget(panel);
+
+//         // 连接信号
+//         connect(toggleBtn, &QToolButton::clicked, [=](){
+//             content->setVisible(!content->isVisible());
+//             toggleBtn->setArrowType(content->isVisible() ?
+//                                         Qt::DownArrow : Qt::RightArrow);
+//         });
+
+//         connect(addBtn, &QToolButton::clicked, [=](){
+//             // 创建可编辑项
+//             QLineEdit *newItem = new QLineEdit(content);
+//             newItem->setPlaceholderText("New lab");
+//             newItem->setStyleSheet(
+//                 "QLineEdit {"
+//                 "   border: 1px solid #E0E0E0;"
+//                 "   border-radius: 2px;"
+//                 "   padding: 2px 4px;"
+//                 "}"
+//                 "QLineEdit:focus {"
+//                 "   border-color: #0078D4;"
+//                 "}");
+//             newItem->setMinimumHeight(24);
+//             contentLayout->addWidget(newItem);
+//         });
+//     }
+
+//     mainLayout->addStretch(); // 添加弹簧使内容置顶
+
+//     // 事件过滤器保持原有逻辑
+//     sidebar->installEventFilter(this);
+
+//     // 创建完成后立即执行布局计算
+//     subMenu->show();  // 必须先show才能正确计算尺寸
+//     subMenu->hide();
+//     //subMenu->setAttribute(Qt::WA_LayoutUpsideDown);  // 适应不同布局方向
+// }
+
+
 void MainWindow::createSubMenu() {
     subMenu = new QWidget(this);
     subMenu->setStyleSheet(
@@ -152,9 +260,29 @@ void MainWindow::createSubMenu() {
                                         Qt::DownArrow : Qt::RightArrow);
         });
 
+        // connect(addBtn, &QToolButton::clicked, [=](){
+        //     // 创建可编辑项
+        //     QLineEdit *newItem = new QLineEdit(content);
+        //     newItem->setPlaceholderText("New lab");
+        //     newItem->setStyleSheet(
+        //         "QLineEdit {"
+        //         "   border: 1px solid #E0E0E0;"
+        //         "   border-radius: 2px;"
+        //         "   padding: 2px 4px;"
+        //         "}"
+        //         "QLineEdit:focus {"
+        //         "   border-color: #0078D4;"
+        //         "}");
+        //     newItem->setMinimumHeight(24);
+        //     contentLayout->addWidget(newItem);
+        // });
+
         connect(addBtn, &QToolButton::clicked, [=](){
-            // 创建可编辑项
+            content->setVisible(1);
+            toggleBtn->setArrowType(content->isVisible() ?
+                                        Qt::DownArrow : Qt::RightArrow);
             QLineEdit *newItem = new QLineEdit(content);
+            // ...原有样式...
             newItem->setPlaceholderText("New lab");
             newItem->setStyleSheet(
                 "QLineEdit {"
@@ -167,6 +295,85 @@ void MainWindow::createSubMenu() {
                 "}");
             newItem->setMinimumHeight(24);
             contentLayout->addWidget(newItem);
+
+            // 添加输入校验
+            // newItem->setValidator(new QRegExpValidator(QRegExp(".{1,20}"), newItem));
+
+            // 智能回车处理
+            auto commitEdit = [=] {
+                if(newItem->text().isEmpty()) {
+                    newItem->setFocus();
+                    newItem->setPlaceholderText("Name cannot be empty!");
+                    return;
+                }
+
+                // 创建带删除功能的按钮
+                QWidget *container = new QWidget(content);
+                QHBoxLayout *hbox = new QHBoxLayout(container);
+                hbox->setContentsMargins(0, 0, 4, 0);
+
+                QToolButton *itemBtn = new QToolButton(container);
+                itemBtn->setText(newItem->text());
+                itemBtn->setStyleSheet(
+                    "QToolButton {"
+                    "   text-align: left;"
+                    "   padding: 2px 4px;"
+                    " background: transparent;" // 添加透明背景
+                    "}"
+                    "QToolButton:focus {"
+                    "   border-color: #0078D4;"
+                    "}"
+                    "QToolButton:hover {"
+                    "   background: #F0F0F0;"
+                    "}");
+
+                //创建新页面
+                canvas* newcanvaspage = new canvas(this);
+                // std::shared_ptr<canvas> newcanvaspage = std::make_shared<canvas>(this);
+                btnCanvasMap.insert(itemBtn, newcanvaspage);
+                qDebug()<<"aaa";
+
+                // 在创建itemBtn后添加连接
+                connect(itemBtn, &QToolButton::clicked, [=]() {
+                    qDebug()<<"bbb";
+                    if (btnCanvasMap.contains(itemBtn)) {
+                        qDebug()<<"ddd";
+                        // std::shared_ptr<canvas> targetcanvas = btnCanvasMap.value(itemBtn);
+                        // 获取原生指针
+                        // canvas* rawCanvas = targetcanvas.get();
+                        canvas* rawCanvas = btnCanvasMap.value(itemBtn);
+
+                        int index = contentStack->indexOf(rawCanvas);
+                        if (index != -1) {
+                            // pageWidget 已经在 stackedWidget 中
+                        } else {
+                            // pageWidget 不在 stackedWidget 中
+                            contentStack->addWidget(rawCanvas);
+                        }
+                        contentStack->setCurrentWidget(rawCanvas);
+                    }
+                });
+
+                QToolButton *delBtn = new QToolButton(container);
+                delBtn->setText("×");
+                delBtn->setFixedSize(16, 16);
+                delBtn->setStyleSheet(
+                    "QToolButton { color: #B71C1C; }"
+                    "QToolButton:hover { background: #FFEBEE; }");
+
+                connect(delBtn, &QToolButton::clicked,
+                        [container] { container->deleteLater(); });
+
+                hbox->addWidget(itemBtn);
+                hbox->addWidget(delBtn);
+
+                contentLayout->replaceWidget(newItem, container);
+                newItem->deleteLater();
+            };
+
+            // 连接回车和失去焦点事件
+            connect(newItem, &QLineEdit::returnPressed, commitEdit);
+            connect(newItem, &QLineEdit::editingFinished, commitEdit);
         });
     }
 
@@ -180,7 +387,6 @@ void MainWindow::createSubMenu() {
     subMenu->hide();
     //subMenu->setAttribute(Qt::WA_LayoutUpsideDown);  // 适应不同布局方向
 }
-
 
 // 修改后的位置更新函数
 void MainWindow::updateSubMenuPosition() {
@@ -711,9 +917,16 @@ QWidget*   MainWindow::createProfileCard()
     bio->setObjectName("bio");
     bio->setWordWrap(true);
 
+    m_checkInWidget = new CompactCheckInWidget(this);
+    m_checkInWidget->setFixedHeight(120); // 设置合适高度
+
+    // 然后添加到布局中：
+    //infoLayout->addWidget(m_checkInWidget);
+
     infoLayout->addWidget(name);
     infoLayout->addWidget(title);
     infoLayout->addWidget(bio);
+    infoLayout->addWidget(m_checkInWidget);
     infoLayout->addStretch();
 
     leftLayout->addWidget(avatarContainer);
@@ -1026,6 +1239,8 @@ MainWindow::MainWindow(QWidget *parent)
 //     contentStack->addWidget(defaultContent);  // 索引0
     contentStack->addWidget(welcomeLabel);  // 索引0
     contentStack->addWidget(githubHomePage);   // 索引1
+    empty = new QWidget();
+    contentStack->addWidget(empty);
 
 
 
@@ -1179,12 +1394,16 @@ MainWindow::MainWindow(QWidget *parent)
             labBtn = btn;  // 保存实验室按钮的指针
             // hideHomePage();
             connect(labBtn, &QPushButton::clicked, [this](){
-                canvasPage = new canvas();
-                contentStack->addWidget(canvasPage);
-                contentStack->setCurrentWidget(canvasPage);
-                // contentStack->setCurrentWidget(defaultContent);
-            //     //resetButtonStates(labBtn); // 更新按钮状态
-            //     //updateButtonState(labBtn);
+            //     canvasPage = new canvas();
+            //     contentStack->addWidget(canvasPage);
+            //     contentStack->setCurrentWidget(canvasPage);
+            //     // contentStack->setCurrentWidget(defaultContent);
+            // //     //resetButtonStates(labBtn); // 更新按钮状态
+            // //     //updateButtonState(labBtn);
+                if(!btnCanvasMap.values().contains(contentStack->currentWidget()))
+                {
+                    contentStack->setCurrentWidget(empty);
+                }
             });
             //contentStack->setCurrentWidget(defaultContent);
 
@@ -1556,22 +1775,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 // }
 
 
-void MainWindow::handleLabButtonClick()
-{
-    // stackedWidget = new QStackedWidget(this);
-    qDebug()<<"AAA";
-    qDebug() << "stackedWidget地址:" << stackedWidget;
-    if (!stackedWidget->widget(1)) { // 首次访问时创建
-        qDebug()<<"BBB";
-        canvasPage = new canvas();
-        stackedWidget->addWidget(canvasPage);
-        stackedWidget->setCurrentWidget(canvasPage);
-        // int index = stackedWidget->addWidget(canvasPage);
-        // qDebug() << "New widget added at index:" << index;
-    }
-    qDebug()<<"CCC";
-    // stackedWidget->setCurrentIndex(1);
-}
+
 
 
 
@@ -1581,4 +1785,13 @@ void MainWindow::onProjectButtonClicked() {
     }
     apiDialog->show(); // 显示弹窗
     //apiDialog->activateWindow(); // 激活窗口焦点
+}
+
+
+
+//签到功能
+void MainWindow::showCheckInDialog()
+{
+    m_checkInWidget->show();
+    //m_checkInWidget->updateUI();
 }

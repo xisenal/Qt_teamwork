@@ -14,6 +14,7 @@ RESOURCES += images.qrc
 SOURCES += \
     apidialog.cpp \
     canvas.cpp \
+    checkinwidget.cpp \
     main.cpp \
     mainwindow.cpp \
     loginwindow.cpp \
@@ -25,6 +26,7 @@ SOURCES += \
 HEADERS += \
     apidialog.h \
     canvas.h \
+    checkinwidget.h \
     mainwindow.h \
     loginwindow.h \
     usermanager.h \

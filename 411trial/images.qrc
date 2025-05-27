@@ -20,5 +20,8 @@
         <file>animations/welcome.gif</file>
         <file>animations/welcome_e.gif</file>
         <file>animations/welcome_ed.gif</file>
+	<file>resources/Wheels.png</file>
+	<file>resources/Swivel.png</file>
+	<file>resources/Filter.png</file>
     </qresource>
 </RCC>

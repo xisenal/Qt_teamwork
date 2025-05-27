@@ -2,6 +2,8 @@
 #define CANVAS_H
 
 #include <QWidget>
+#include <QLabel>
+
 
 namespace Ui {
 class canvas;
@@ -17,6 +19,10 @@ public:
 
 private:
     Ui::canvas *ui;
+    QLabel *label1;
+    QLabel *label2;
+    QLabel *label3;
+    int posx = 800;
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;      // 鼠标按下事件
@@ -26,6 +32,7 @@ protected:
     bool isRightRegion(const QPoint& pos) const;  // 新增右侧区域判断函数
     // 新增拖出事件声明
     void dragLeaveEvent(QDragLeaveEvent* event) override;
+    void resizeEvent(QResizeEvent *event) override;
 };
 
 #endif // CANVAS_H

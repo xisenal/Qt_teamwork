@@ -4,6 +4,7 @@
 #include "canvas.h"
 #include "todolistwindow.h"
 #include "apidialog.h"
+#include "checkinwidget.h"
 
 
 #include <QMainWindow>
@@ -62,6 +63,8 @@ private:
     QWidget*  createProfileCard();
     void updateButtonState(QPushButton *activeBtn);
 
+    CompactCheckInWidget *m_checkInWidget;
+
     // static const QString normalButtonStyle;
     // static const QString activeButtonStyle;
 
@@ -82,7 +85,7 @@ private slots:
     void toggleLabSubMenu();
     void updateSubMenuPosition();
     void showTodoList();
-    void handleLabButtonClick();
+    //void handleLabButtonClick();
     void onProjectButtonClicked(); // 响应按钮点击
 
 
@@ -122,11 +125,16 @@ private:
     // 用于页面切换与新页面
     QStackedWidget *stackedWidget;
     canvas *canvasPage;
+    QWidget *empty;
+
+    QMap<QToolButton*, canvas*> btnCanvasMap;
 
     //首页相关
     QStackedWidget *contentStack;  // 新增：页面堆栈
     QWidget *githubHomePage;       // 新增：GitHub风格主页
     QTextEdit *defaultContent;     // 原有内容区域改为成员变量
+
+    void showCheckInDialog();
 };
 
 // // 在类定义中添加样式常量

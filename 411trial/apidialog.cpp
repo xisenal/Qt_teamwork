@@ -544,12 +544,12 @@ void ApiDialog::onApiResponseReceived(QNetworkReply *reply)
 
         validResultCount++;
 
-        qDebug() << "Added result" << validResultCount << ":"
-                 << "Title:" << title
-                 << "Authors:" << authors
-                 << "Year:" << year
-                 << "Citations:" << citations
-                 << "Link:" << link;
+        // qDebug() << "Added result" << validResultCount << ":"
+        //          << "Title:" << title
+        //          << "Authors:" << authors
+        //          << "Year:" << year
+        //          << "Citations:" << citations
+        //          << "Link:" << link;
     }
 
     if (validResultCount == 0) {
@@ -720,6 +720,48 @@ void ApiDialog::sortByNumericData(int column, Qt::SortOrder order)
 
 void ApiDialog::mynewsort(int column, Qt::SortOrder order)
 {
+    // int rowCount = ui->tableResults->rowCount();
+    // if (rowCount <= 1) return;
+
+    // // 创建排序数据结构
+    // QList<QPair<int, int>> sortData; // <数值, 行号>
+
+    // for (int i = 0; i < rowCount; ++i) {
+    //     QTableWidgetItem *item = ui->tableResults->item(i, column);
+    //     if (item) {
+    //         int value = item->data(Qt::UserRole).toInt();
+    //         sortData.append(qMakePair(value, i));
+    //     }
+    // }
+
+    // // 排序
+    // std::sort(sortData.begin(), sortData.end(), [order](const QPair<int, int> &a, const QPair<int, int> &b) {
+    //     if (order == Qt::AscendingOrder) {
+    //         return a < b;
+    //     } else {
+    //         return a > b;
+    //     }
+    // });
+
+    // // 重新排列表格行
+    // QList<QList<QTableWidgetItem*>> allRows;
+    // for (int i = 0; i < rowCount; ++i) {
+    //     QList<QTableWidgetItem*> row;
+    //     for (int j = 0; j < ui->tableResults->columnCount(); ++j) {
+    //         row.append(ui->tableResults->takeItem(i, j));
+    //     }
+    //     allRows.append(row);
+    // }
+
+    // // 按排序顺序重新插入
+    // for (int i = 0; i < sortData.size(); ++i) {
+    //     int originalRow = sortData[i].second;
+    //     for (int j = 0; j < ui->tableResults->columnCount(); ++j) {
+    //         ui->tableResults->setItem(i, j, allRows[originalRow][j]);
+    //     }
+    // }
+
+
     int rowCount = ui->tableResults->rowCount();
     if (rowCount <= 1) return;
 
@@ -729,17 +771,45 @@ void ApiDialog::mynewsort(int column, Qt::SortOrder order)
     for (int i = 0; i < rowCount; ++i) {
         QTableWidgetItem *item = ui->tableResults->item(i, column);
         if (item) {
+            // 获取存储在UserRole中的数值
             int value = item->data(Qt::UserRole).toInt();
+
+            // 如果UserRole中没有数据，尝试从显示文本解析
+            if (value == 0 && item->text() != "0") {
+                QString text = item->text().trimmed();
+                if (text == "N/A" || text.isEmpty()) {
+                    value = -1; // 将N/A设为-1，方便排序处理
+                } else {
+                    bool ok;
+                    value = text.toInt(&ok);
+                    if (!ok) {
+                        value = -1; // 解析失败也设为-1
+                    }
+                }
+            }
+
             sortData.append(qMakePair(value, i));
         }
     }
 
-    // 排序
+    // 排序 - 修复了比较逻辑
     std::sort(sortData.begin(), sortData.end(), [order](const QPair<int, int> &a, const QPair<int, int> &b) {
+        // 处理N/A值（-1）
+        if (a.first == -1 && b.first == -1) {
+            return false; // 两个N/A值相等
+        }
+        if (a.first == -1) {
+            return order == Qt::DescendingOrder; // N/A在降序时排前面，升序时排后面
+        }
+        if (b.first == -1) {
+            return order == Qt::AscendingOrder; // N/A在升序时排后面，降序时排前面
+        }
+
+        // 正常数值比较 - 这里是关键修复
         if (order == Qt::AscendingOrder) {
-            return a < b;
+            return a.first < b.first; // 比较数值部分，不是整个pair
         } else {
-            return a > b;
+            return a.first > b.first; // 比较数值部分，不是整个pair
         }
     });
 
