@@ -23,5 +23,10 @@
 	<file>resources/Wheels.png</file>
 	<file>resources/Swivel.png</file>
 	<file>resources/Filter.png</file>
+	<file>resources/homepage.png</file>
+	<file>resources/lab-innovation.png</file>
+	<file>resources/google.png</file>
+	<file>resources/edit.png</file>
+
     </qresource>
 </RCC>

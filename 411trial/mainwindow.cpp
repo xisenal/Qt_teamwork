@@ -1765,10 +1765,10 @@ MainWindow::MainWindow(QWidget *parent)
     navLayout->setContentsMargins(10, 10, 10, 10);
 
     const QList<QPair<QString, QString>> navItems = {
-        {"         主页", ":/resources/home.png"},
-        {"        实验室", ":/resources/lab.png"},
-        {"         项目", ":/resources/tasks.png"},
-        {"      个人资料", ":/resources/profile.png"},
+        {"         主页", ":/resources/homepage.png"},
+        {"        实验室", ":/resources/lab-innovation.png"},
+        {"         项目", ":/resources/google.png"},
+        {"      个人资料", ":/resources/edit.png"},
         {"     To Do List", ":/resources/to-do.png"}
     };
 
