@@ -1699,7 +1699,26 @@ QWidget*   MainWindow::createProfileCard()
                 dayLabel->setAlignment(Qt::AlignCenter);
 
                 // 随机生成活跃日期示例
-                bool isActive = QRandomGenerator::global()->bounded(5) == 0;
+                //bool isActive = QRandomGenerator::global()->bounded(5) == 0;
+
+                //5.29 优化
+                // 获取当前日期
+                //int currentDay = QDate::currentDate().day();
+
+                int currentDay = dayCount;
+
+                bool isActive;
+                if (currentDay >= 1 && currentDay <= 25) {
+                    // 1-25日随机活跃
+                    isActive = QRandomGenerator::global()->bounded(3) == 0;
+                } else if (currentDay == 26) {
+                    // 26日不活跃
+                    isActive = false;
+                } else {
+                    // 27-31日活跃
+                    isActive = true;
+                }
+
                 if (isActive) {
                     dayLabel->setProperty("class", "active");
                 }
@@ -1716,8 +1735,27 @@ QWidget*   MainWindow::createProfileCard()
             QLabel *dayLabel = new QLabel(QString::number(dayCount));
             dayLabel->setAlignment(Qt::AlignCenter);
 
-            // 随机生成活跃日期示例
-            bool isActive = QRandomGenerator::global()->bounded(5) == 0;
+
+            //int currentDay = QDate::currentDate().day();
+            int currentDay = dayCount;
+
+            bool isActive;
+            if (currentDay >= 1 && currentDay <= 25) {
+                // 1-25日随机活跃
+                isActive = QRandomGenerator::global()->bounded(3) == 0;
+            } else if (currentDay == 26) {
+                // 26日不活跃
+                isActive = false;
+            } else {
+                // 27-31日活跃
+                isActive = true;
+            }
+
+            if (isActive) {
+                dayLabel->setProperty("class", "active");
+            }
+
+
             if (isActive) {
                 dayLabel->setProperty("class", "active");
             }
