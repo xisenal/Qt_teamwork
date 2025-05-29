@@ -32,6 +32,16 @@ bool EmailSender::sendVerificationCode(const QString &recipientEmail, QString &v
     return sendEmail(recipientEmail, subject, body);
 }
 
+
+bool  EmailSender::SendpasswordCode(const QString &recipientEmail, QString &verificationCode)
+{
+    verificationCode = generateVerificationCode();
+    QString subject = "验证码 - XLab邮箱验证";
+    QString body = QString("尊敬的X-Lab用户：您好！您的验证码是: %1\n\n此验证码将在10分钟内有效。请注意：您的账户正在X-Lab平台尝试更改密码，请确认这是您本人的操作。如否，请尽快登录X-Lab更换密码来确保安全。").arg(verificationCode);
+
+    return sendEmail(recipientEmail, subject, body);
+}
+
 QString EmailSender::generateVerificationCode()
 {
     QString code;
@@ -105,6 +115,7 @@ bool EmailSender::waitForResponse()
         lastError = "Response timeout";
         return false;
     }
+
 
     QString response = QString::fromUtf8(socket.readAll());
     qDebug() << "Server response:" << response;

@@ -1,6 +1,8 @@
 #include "profiledialog.h"
 #include "ProfileDialog.h"
 
+#include "changepassworddialog.h"
+
 ProfileDialog::ProfileDialog(QWidget *parent)
     : QDialog(parent)
 {
@@ -326,6 +328,21 @@ void ProfileDialog::onChangePasswordClicked()
 {
     // 这里可以打开修改密码对话框
     //QMessageBox::information(this, "提示", "修改密码功能待实现");
+
+
+
+    // 获取当前用户邮箱
+    QString userEmail = emailEdit->text().trimmed();
+
+    if (userEmail.isEmpty()) {
+        QMessageBox::warning(this, "提示", "请先填写邮箱地址！");
+        return;
+    }
+
+    // 打开修改密码对话框
+    ChangePasswordDialog *dialog = new ChangePasswordDialog(userEmail, this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->exec();
 
 
 }
