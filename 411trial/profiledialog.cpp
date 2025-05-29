@@ -1,6 +1,34 @@
 #include "ProfileDialog.h"
 #include "changepassworddialog.h"
 #include "avatarmanager.h"
+#include <QPainter>
+
+QPixmap createRoundPixmap(const QPixmap& source, int size) {
+    // 创建一个正方形的透明pixmap
+    QPixmap target(size, size);
+    target.fill(Qt::transparent);
+
+    // 创建painter
+    QPainter painter(&target);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    //painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+
+    // 设置圆形裁剪区域
+    painter.setClipRegion(QRegion(QRect(0, 0, size, size), QRegion::Ellipse));
+
+    // 绘制缩放后的图片
+    QPixmap scaledSource = source.scaled(size, size, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+
+    // 居中绘制（如果图片不是正方形，确保居中显示）
+    int x = (size - scaledSource.width()) / 2;
+    int y = (size - scaledSource.height()) / 2;
+    painter.drawPixmap(x, y, scaledSource);
+
+    return target;
+}
+
+
 
 ProfileDialog::ProfileDialog(QWidget *parent)
     : QDialog(parent)
@@ -51,6 +79,10 @@ void ProfileDialog::setupUI()
     avatarBtn->setObjectName("avatarBtn");
     avatarBtn->setFixedSize(80, 80);
     avatarBtn->setText("点击更换");
+
+    // 设置图标大小
+    avatarBtn->setIconSize(QSize(75, 75));  // 比按钮稍小一点
+
 
     QLabel *avatarHint = new QLabel("点击更换头像");
     avatarHint->setObjectName("avatarHint");
@@ -266,8 +298,10 @@ void ProfileDialog::loadUserInfo()
     phoneEdit->setText("188********");
 
     // 加载头像
-    QPixmap avatar = AvatarManager::instance()->getAvatarPixmap(150, 150);
-    avatarBtn->setIcon(QIcon(avatar));
+    QPixmap avatar = AvatarManager::instance()->getAvatarPixmap(70, 70);
+    QPixmap roundPixmap = createRoundPixmap(avatar, 70);
+    avatarBtn->setIcon(QIcon(roundPixmap));
+    //avatarBtn->setIcon(QIcon(avatar));
     avatarBtn->setText("");
 }
 
@@ -314,8 +348,11 @@ void ProfileDialog::onAvatarClicked()
             // 使用头像管理器保存头像
             if (AvatarManager::instance()->saveAvatar(fileName)) {
                 // 更新按钮显示
-                QPixmap scaledPixmap = pixmap.scaled(150, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-                avatarBtn->setIcon(QIcon(scaledPixmap));
+                QPixmap scaledPixmap = pixmap.scaled(70, 70, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+                QPixmap s_roundPixmap = createRoundPixmap(scaledPixmap, 70);
+                avatarBtn->setIcon(QIcon(s_roundPixmap));
+                //avatarBtn->setIcon(QIcon(scaledPixmap));
                 avatarBtn->setText("");
                 QMessageBox::information(this, "成功", "头像更新成功！");
             } else {
