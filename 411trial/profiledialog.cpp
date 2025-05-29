@@ -1,7 +1,6 @@
-#include "profiledialog.h"
 #include "ProfileDialog.h"
-
 #include "changepassworddialog.h"
+#include "avatarmanager.h"
 
 ProfileDialog::ProfileDialog(QWidget *parent)
     : QDialog(parent)
@@ -87,6 +86,10 @@ void ProfileDialog::setupUI()
     phoneEdit->setPlaceholderText("请输入手机号码");
 
     // 修改密码按钮
+
+    QLabel *pwLabel = new QLabel("密码:");
+    pwLabel->setStyleSheet("font-size: 14px");
+    pwLabel->setObjectName("passwordLabel");
     changePasswordBtn = new QPushButton("修改密码");
     changePasswordBtn->setObjectName("changePasswordBtn");
 
@@ -96,7 +99,7 @@ void ProfileDialog::setupUI()
     formLayout->addWidget(emailEdit, 1, 1);
     formLayout->addWidget(phoneLabel, 2, 0);
     formLayout->addWidget(phoneEdit, 2, 1);
-    formLayout->addWidget(new QLabel("密码:"), 3, 0);
+    formLayout->addWidget(pwLabel, 3, 0);
     formLayout->addWidget(changePasswordBtn, 3, 1);
 
     // 底部按钮
@@ -185,6 +188,12 @@ void ProfileDialog::setupStyles()
             font-weight: 500;
             padding-right: 10px;
         }
+        QLabel#passwordLabel {
+            font-size: 14px;
+            color: #2c2c2c;
+            font-weight: 500;
+            padding-right: 10px;
+        }
 
         QLineEdit#fieldEdit {
             padding: 10px 12px;
@@ -252,17 +261,14 @@ void ProfileDialog::setupStyles()
 void ProfileDialog::loadUserInfo()
 {
     // 这里可以从配置文件或数据库加载用户信息
-    nicknameEdit->setText("请输入新的用户昵称");
+    nicknameEdit->setText("jammming");
     emailEdit->setText("3922909893@qq.com");
-    phoneEdit->setText("请输入您想要绑定的手机号");
+    phoneEdit->setText("188********");
 
     // 加载头像
-    currentAvatarPath = ":/resources/avatar.png";
-    QPixmap avatar(currentAvatarPath);
-    if (!avatar.isNull()) {
-        avatarBtn->setIcon(QIcon(avatar.scaled(60, 60, Qt::KeepAspectRatio, Qt::SmoothTransformation)));
-        avatarBtn->setText("");
-    }
+    QPixmap avatar = AvatarManager::instance()->getAvatarPixmap(150, 150);
+    avatarBtn->setIcon(QIcon(avatar));
+    avatarBtn->setText("");
 }
 
 void ProfileDialog::saveUserInfo()
@@ -305,9 +311,16 @@ void ProfileDialog::onAvatarClicked()
     if (!fileName.isEmpty()) {
         QPixmap pixmap(fileName);
         if (!pixmap.isNull()) {
-            currentAvatarPath = fileName;
-            avatarBtn->setIcon(QIcon(pixmap.scaled(60, 60, Qt::KeepAspectRatio, Qt::SmoothTransformation)));
-            avatarBtn->setText("");
+            // 使用头像管理器保存头像
+            if (AvatarManager::instance()->saveAvatar(fileName)) {
+                // 更新按钮显示
+                QPixmap scaledPixmap = pixmap.scaled(150, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                avatarBtn->setIcon(QIcon(scaledPixmap));
+                avatarBtn->setText("");
+                QMessageBox::information(this, "成功", "头像更新成功！");
+            } else {
+                QMessageBox::warning(this, "错误", "头像保存失败！");
+            }
         } else {
             QMessageBox::warning(this, "错误", "无法加载选择的图片！");
         }
@@ -326,11 +339,6 @@ void ProfileDialog::onCancelClicked()
 
 void ProfileDialog::onChangePasswordClicked()
 {
-    // 这里可以打开修改密码对话框
-    //QMessageBox::information(this, "提示", "修改密码功能待实现");
-
-
-
     // 获取当前用户邮箱
     QString userEmail = emailEdit->text().trimmed();
 
@@ -343,6 +351,4 @@ void ProfileDialog::onChangePasswordClicked()
     ChangePasswordDialog *dialog = new ChangePasswordDialog(userEmail, this);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->exec();
-
-
 }

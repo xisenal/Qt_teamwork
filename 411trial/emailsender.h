@@ -15,7 +15,7 @@ class EmailSender : public QObject
 public:
     explicit EmailSender(QObject *parent = nullptr);
     bool sendVerificationCode(const QString &recipientEmail, QString &verificationCode);
-    bool SendpasswordCode(const QString &recipientEmail, QString &verificationCode)；
+    bool SendpasswordCode(const QString &recipientEmail, QString &verificationCode);
 
 private:
     QString generateVerificationCode();

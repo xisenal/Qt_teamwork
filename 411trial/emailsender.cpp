@@ -33,7 +33,9 @@ bool EmailSender::sendVerificationCode(const QString &recipientEmail, QString &v
 }
 
 
-bool  EmailSender::SendpasswordCode(const QString &recipientEmail, QString &verificationCode)
+
+//5.29
+bool EmailSender::SendpasswordCode(const QString &recipientEmail, QString &verificationCode)
 {
     verificationCode = generateVerificationCode();
     QString subject = "验证码 - XLab邮箱验证";

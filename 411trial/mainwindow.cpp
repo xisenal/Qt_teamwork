@@ -59,7 +59,7 @@ UserInfoDialog::UserInfoDialog(const QString &email, QWidget *parent)
 
     //QLabel *nameLabel = new QLabel(description, contentWidget);
     QLabel *nameLabel = new QLabel(QString("邮箱：3922909893@qq.com"));
-    nameLabel->setStyleSheet("font-size: 10px; font-weight: bold; color: #333;");
+    nameLabel->setStyleSheet("font-size: 12px; font-weight: bold; color: #333;");
     nameLabel->setAlignment(Qt::AlignCenter);
     //QLabel *idLabel = new QLabel(QString("学号：%1").arg(schoolId), contentWidget);
     QLabel *idLabel = new QLabel(QString("学号：2400012908"));
@@ -678,7 +678,7 @@ QWidget* MainWindow::createLabCard(const QString &title,
     QLabel *iconLabel = new QLabel;
     QPixmap pix(iconPath);
     if(pix.isNull()) {
-        pix = QPixmap(":/resources/default_lab.png").scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        pix = QPixmap(":/resources/lab.png").scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     } else {
         pix = pix.scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
@@ -700,7 +700,7 @@ QWidget* MainWindow::createLabCard(const QString &title,
     QWidget *statusBar = new QWidget;
     QHBoxLayout *statusLayout = new QHBoxLayout(statusBar);
 
-    QLabel *statusLabel = new QLabel("🟢 实验中");
+    QLabel *statusLabel = new QLabel("🟢 实验研究中");
     statusLabel->setStyleSheet("color: #2cbe4e; font-size: 12px;");
 
     QPushButton *detailButton = new QPushButton("查看详情 →");
@@ -735,7 +735,7 @@ QWidget* MainWindow::createLabCard(const QString &title,
     // 点击事件
     connect(detailButton, &QPushButton::clicked, [this, title](){
         QMessageBox::information(this, "项目详情",
-                                 QString("即将展示【%1】的详细信息...").arg(title));
+                                 QString("即将展示【%1】的详细信息...项目研发中，敬请期待").arg(title));
     });
 
     return card;
@@ -1925,6 +1925,10 @@ MainWindow::MainWindow(QWidget *parent)
     //setAttribute(Qt::WA_TranslucentBackground);
     this->setStyleSheet("background: white;");
 
+
+    // 确保头像管理器初始化
+    AvatarManager::instance();
+
     // 主窗口设置
     setMinimumSize(1024, 768);
 
@@ -2091,6 +2095,22 @@ MainWindow::MainWindow(QWidget *parent)
     avatar->setAlignment(Qt::AlignCenter);
     avatar->setCursor(Qt::PointingHandCursor);
     avatar->installEventFilter(this);
+    // // 在你现有的头像创建代码处修改：
+    // avatar = new QLabel(userInfoBox);
+    // updateAvatar();  // 使用新的更新函数
+    // avatar->setAlignment(Qt::AlignCenter);
+    // avatar->setCursor(Qt::PointingHandCursor);
+    // avatar->installEventFilter(this);
+
+    // 连接头像更新信号
+    connect(AvatarManager::instance(), &AvatarManager::avatarChanged,
+            this, &MainWindow::updateAvatar);
+
+
+
+
+
+
 
     // 组装用户信息
     userLayout->addWidget(avatar);
@@ -2556,4 +2576,17 @@ void MainWindow::showProfileDialog()
     ProfileDialog *dialog = new ProfileDialog(this);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->exec();
+}
+
+
+void MainWindow::updateAvatar()
+{
+    // QPixmap pix = AvatarManager::instance()->getAvatarPixmap(50, 50);
+    //不太对？？？
+    // QPixmap pix =
+    QPixmap pix(":/resources/newavatar.png");
+    pix = pix.scaled(50, 50, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    avatar->setPixmap(pix);
+
+    avatar->setPixmap(pix);
 }

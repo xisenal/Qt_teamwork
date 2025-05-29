@@ -27,6 +27,8 @@
 	<file>resources/lab-innovation.png</file>
 	<file>resources/google.png</file>
 	<file>resources/edit.png</file>
+	<file>resources/newavatar.jpg</file>
+	<file>resources/newavatar.png</file>
 
     </qresource>
 </RCC>

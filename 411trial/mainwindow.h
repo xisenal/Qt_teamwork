@@ -6,6 +6,7 @@
 #include "apidialog.h"
 #include "checkinwidget.h"
 #include "profiledialog.h"
+#include "avatarmanager.h"
 
 
 #include <QMainWindow>
@@ -90,6 +91,7 @@ private slots:
     void onProjectButtonClicked(); // 响应按钮点击
 
     void showProfileDialog();
+    void updateAvatar();  // 更新头像的槽函数
 
 
 

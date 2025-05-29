@@ -13,6 +13,7 @@ RESOURCES += images.qrc
 
 SOURCES += \
     apidialog.cpp \
+    avatarmanager.cpp \
     canvas.cpp \
     changepassworddialog.cpp \
     checkinwidget.cpp \
@@ -27,6 +28,7 @@ SOURCES += \
 
 HEADERS += \
     apidialog.h \
+    avatarmanager.h \
     canvas.h \
     changepassworddialog.h \
     checkinwidget.h \
