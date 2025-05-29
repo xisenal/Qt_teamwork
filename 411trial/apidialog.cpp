@@ -358,7 +358,7 @@ void ApiDialog::onSearchButtonClicked()
     params.addQueryItem("api_key", "d0e75c248bd4209b25e41b7961260175699842f4d4730dacc3196ddb3893d83f");
     params.addQueryItem("engine", "google_scholar");
     params.addQueryItem("hl", "en");
-    params.addQueryItem("num", "20");  // 增加结果数量
+    params.addQueryItem("num", "30");  // 增加结果数量
     url.setQuery(params);
 
     QNetworkRequest request(url);

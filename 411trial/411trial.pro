@@ -29,6 +29,7 @@ HEADERS += \
     checkinwidget.h \
     mainwindow.h \
     loginwindow.h \
+    profile_edit.h \
     usermanager.h \
     emailsender.h \
     adminwindow.h \

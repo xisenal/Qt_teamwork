@@ -1,6 +1,7 @@
 // mainwindow.cpp
 #include "mainwindow.h"
 #include "usermanager.h"
+#include <profile_edit.h>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -1221,7 +1222,7 @@ QWidget*   MainWindow::createProfileCard()
 
     // 外层容器 - 增加高度
     QWidget *avatarContainer = new QWidget;
-    avatarContainer->setFixedSize(180, 320); // 原来150x240 → 现在180x320
+    avatarContainer->setFixedSize(170, 360); // 原来150x240 → 现在180x320
     avatarContainer->setStyleSheet(R"(
     QWidget {
         background: white;
@@ -1233,17 +1234,27 @@ QWidget*   MainWindow::createProfileCard()
     // 使用垂直布局管理头像和状态信息
     QVBoxLayout *promainLayout = new QVBoxLayout(avatarContainer);
     promainLayout->setContentsMargins(15, 20, 15, 20); // 增加内边距
-    promainLayout->setSpacing(16);
+    promainLayout->setSpacing(12);
 
     // 上半部分 - 更大的圆形头像
-    QLabel *avatar = new QLabel;
-    avatar->setFixedSize(140, 140); // 设置固定尺寸确保圆形
+    //QLabel *avatar = new QLabel;
+    //QWidget *avatarContainer = new QWidget;
+    // QHBoxLayout *avatarLayout = new QHBoxLayout(avatarContainer);
+    // avatarLayout->setAlignment(Qt::AlignCenter);
+
+    // ClickableAvatarLabel *avatarLabel = new ClickableAvatarLabel;
+    // avatarLabel->setPixmap(QPixmap(":/default_avatar.png").scaled(80, 80, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    // avatarLayout->addWidget(avatarLabel);
+
+
+    ClickableAvatarLabel *avatar = new ClickableAvatarLabel;
+    avatar->setFixedSize(143, 143); // 设置固定尺寸确保圆形
     avatar->setScaledContents(true); // 启用缩放内容
 
     QPixmap pix(":/resources/myavatar.png");
     if (!pix.isNull()) {
         // 创建圆形遮罩
-        QPixmap roundedPix(140, 140);
+        QPixmap roundedPix(143, 143);
         roundedPix.fill(Qt::transparent);
 
         QPainter painter(&roundedPix);
@@ -1251,11 +1262,11 @@ QWidget*   MainWindow::createProfileCard()
 
         // 创建圆形路径
         QPainterPath path;
-        path.addEllipse(0, 0, 140, 140);
+        path.addEllipse(0, 0, 143, 143);
         painter.setClipPath(path);
 
         // 绘制缩放后的图片
-        painter.drawPixmap(0, 0, 140, 140, pix.scaled(140, 140, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+        painter.drawPixmap(0, 0, 143, 143, pix.scaled(143, 143, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
 
         avatar->setPixmap(roundedPix);
     } else {
@@ -1288,10 +1299,30 @@ QWidget*   MainWindow::createProfileCard()
     proinfoLayout->setSpacing(8); // 增加间距
 
     // 地区显示
-    QLabel *region = new QLabel("中国 · 北京");
-    region->setAlignment(Qt::AlignCenter);
-    region->setStyleSheet("font-size: 13px; color: #666; font-weight: 500;"); // 稍微调整样式
-    proinfoLayout->addWidget(region);
+    // QLabel *region = new QLabel("中国 · 北京");
+    // region->setAlignment(Qt::AlignCenter);
+    // region->setStyleSheet("font-size: 13px; color: #666; font-weight: 500;"); // 稍微调整样式
+    // proinfoLayout->addWidget(region);
+
+
+
+    // 可编辑地区
+    EditableLabel *region = new EditableLabel("北京, 中国");
+
+    //region->setAlignment(Qt::AlignCenter);
+    region->setObjectName("region");
+    region->setFixedSize(130, 50);
+
+    region->setStyleSheet("font-size: 13px; color: #888;font-weight: 500;");
+    //proinfoLayout->addWidget(region);
+    region->setAlignment(Qt::AlignCenter); // 文本居中
+
+    // 为地区创建水平居中布局
+    QHBoxLayout *regionLayout = new QHBoxLayout;
+    regionLayout->setContentsMargins(0, 0, 0, 0);
+    regionLayout->addStretch(); // 左侧弹性空间
+    regionLayout->addWidget(region);
+    regionLayout->addStretch(); // 右侧弹性空间
 
     // 状态显示
     QHBoxLayout *statusLayout = new QHBoxLayout;
@@ -1307,7 +1338,56 @@ QWidget*   MainWindow::createProfileCard()
 )");
 
     EditableStatusLabel *statusText = new EditableStatusLabel("摸鱼中");
+    statusText->setFixedSize(120, 50);
     statusText->setStyleSheet("font-size: 13px; color: #666; font-weight: 500;");
+    statusText->setAlignment(Qt::AlignCenter);
+
+
+    // 状态容器 - 将图标和文本组合
+    //QWidget *statusContainer = new QWidget;
+    //
+    //statusContainer->setStyleSheet("QWidget { border: none;}"); // 隐藏边框和背景
+    // QHBoxLayout *statusInnerLayout = new QHBoxLayout(statusContainer);
+    // statusInnerLayout->setContentsMargins(0, 0, 0, 0);
+    // statusInnerLayout->setSpacing(4);
+    // statusInnerLayout->addWidget(statusIcon);
+    // statusInnerLayout->addWidget(statusText);
+
+    // 为状态容器创建水平居中布局
+    QHBoxLayout *statusCenterLayout = new QHBoxLayout;
+    //statusCenterLayout->setContentsMargins(0, 0, 0, 0);
+    statusCenterLayout->addStretch(); // 左侧弹性空间
+    //statusCenterLayout->addWidget(statusContainer);
+    statusCenterLayout->addWidget(statusIcon);
+    statusCenterLayout->addWidget(statusText);
+    statusCenterLayout->addStretch(); // 右侧弹性空间
+
+
+    // 创建一个独立的函数来处理圆形头像裁剪
+    auto createRoundedAvatar = [](const QString& imagePath, int size = 143) -> QPixmap {
+        QPixmap originalPix(imagePath);
+        if (originalPix.isNull()) {
+            return QPixmap(); // 返回空的 QPixmap
+        }
+
+        // 创建圆形遮罩
+        QPixmap roundedPix(size, size);
+        roundedPix.fill(Qt::transparent);
+
+        QPainter painter(&roundedPix);
+        painter.setRenderHint(QPainter::Antialiasing);
+
+        // 创建圆形路径
+        QPainterPath path;
+        path.addEllipse(0, 0, size, size);
+        painter.setClipPath(path);
+
+        // 绘制缩放后的图片
+        painter.drawPixmap(0, 0, size, size,
+                           originalPix.scaled(size, size, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+
+        return roundedPix;
+    };
 
     // 设置状态改变回调
     statusText->setStatusChangedCallback([statusIcon](const QString &newStatus) {
@@ -1331,53 +1411,216 @@ QWidget*   MainWindow::createProfileCard()
     )").arg(color));
     });
 
-    // 居中对齐状态
-    statusLayout->addStretch();
-    statusLayout->addWidget(statusIcon);
-    statusLayout->addWidget(statusText);
-    statusLayout->addStretch();
+    // // 居中对齐状态
+    // statusLayout->addStretch();
+    // statusLayout->addWidget(statusIcon);
+    // statusLayout->addWidget(statusText);
+    // statusLayout->addStretch();
 
     // 从配置文件加载保存的状态
     QSettings settings;
     QString savedStatus = settings.value("user_status", "摸鱼中").toString();
+
+    //从配置文件加载初始值
+
+
+
     statusText->setText(savedStatus);
     // 触发一次回调来设置正确的图标颜色
     statusText->setStatusChangedCallback([statusIcon](const QString &newStatus) {
         // ... 同上面的回调逻辑
+        qDebug() << "状态更新为:" << newStatus;
+
+        // 根据状态文本改变图标颜色
+        QString color = "#7fff00"; // 默认绿色
+        if (newStatus.contains("工作") || newStatus.contains("忙") || newStatus.contains("卷")) {
+            color = "#ff4444"; // 红色
+        } else if (newStatus.contains("学习") || newStatus.contains("专注")) {
+            color = "#4488ff"; // 蓝色
+        } else if (newStatus.contains("休息")) {
+            color = "#ffaa00"; // 橙色
+        } else if (newStatus.contains("离线") || newStatus.contains("下线")) {
+            color = "#999999"; // 灰色
+        }
+
+        statusIcon->setStyleSheet(QString(R"(
+        background-color: %1;
+        border-radius: 5px;
+    )").arg(color));
     });
 
-    proinfoLayout->addLayout(statusLayout);
+
+    // 设置地区回调
+    region->setTextChangedCallback([&](const QString& newRegion) {
+        QSettings settings;  // 在回调中创建新的 QSettings 对象
+        settings.setValue("user_region", newRegion);
+    });
+
+    // 设置头像回调
+    // avatar->setAvatarChangedCallback([&](const QString& newPath) {
+    //     QSettings settings;  // 在回调中创建新的 QSettings 对象
+    //     settings.setValue("user_avatar", newPath);
+    // });
+    // 优化后的头像回调
+    avatar->setAvatarChangedCallback([avatar, createRoundedAvatar](const QString& newPath) {
+        QSettings settings;
+        settings.setValue("user_avatar", newPath);
+
+        // 立即应用圆形裁剪效果
+        QPixmap roundedPix = createRoundedAvatar(newPath, 143);
+        if (!roundedPix.isNull()) {
+            avatar->setPixmap(roundedPix);
+        } else {
+            // 如果图片加载失败，显示默认圆形背景
+            avatar->setStyleSheet(R"(
+            QLabel {
+                background-color: #f0f0f0;
+                border-radius: 70px;
+                border: 3px solid #e1e4e8;
+            }
+        )");
+            avatar->setText("头像");
+            avatar->setAlignment(Qt::AlignCenter);
+        }
+
+        // 确保边框样式保持一致
+        avatar->setStyleSheet(R"(
+        QLabel {
+            border-radius: 70px;
+            border: 3px solid #e1e4e8;
+            background-color: transparent;
+        }
+    )");
+    });
+
+
+    region->setText(settings.value("user_region", "北京, 中国").toString());
+    QString avatarPath = settings.value("user_avatar").toString();
+    if (!avatarPath.isEmpty() && QFile::exists(avatarPath)) {
+        avatar->setPixmap(QPixmap(avatarPath).scaled(143, 143, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    }
+
+
+    // proinfoLayout->addWidget(region);
+    // proinfoLayout->addLayout(statusLayout);
+    proinfoLayout->addLayout(regionLayout);
+    proinfoLayout->addLayout(statusCenterLayout);
     promainLayout->addLayout(proinfoLayout);
 
 
-        // 个人信息
+        // // 个人信息
+        // QWidget *info = new QWidget;
+        // QVBoxLayout *infoLayout = new QVBoxLayout(info);
+
+        // QLabel *name = new QLabel("Jamming Y");
+        // name->setObjectName("name");
+
+        // QLabel *title = new QLabel("FW Qt Developer");
+        // title->setObjectName("title");
+
+        // QLabel *bio = new QLabel("Open source contributor | Working on AI projects  (really？");
+        // bio->setObjectName("bio");
+        // bio->setWordWrap(true);
+
+
+
+        // // 然后添加到布局中：
+        // //infoLayout->addWidget(m_checkInWidget);
+
+        // infoLayout->addWidget(name);
+        // infoLayout->addWidget(title);
+        // infoLayout->addWidget(bio);
+        // infoLayout->addWidget(m_checkInWidget);
+        // infoLayout->addStretch();
+
+        // leftLayout->addWidget(avatarContainer);
+        // leftLayout->addWidget(info);
+
+
+        // 头像容器（添加点击效果）
+
+
+        // 个人信息区域
         QWidget *info = new QWidget;
         QVBoxLayout *infoLayout = new QVBoxLayout(info);
+        infoLayout->setSpacing(5);
+        infoLayout->setContentsMargins(10, 10, 10, 10);
 
-        QLabel *name = new QLabel("Jamming Y");
+        // 可编辑昵称
+        EditableLabel *name = new EditableLabel("Jamming Y");
         name->setObjectName("name");
+        name->setStyleSheet("font-size: 16px; font-weight: bold;");
 
-        QLabel *title = new QLabel("FW Qt Developer");
+        // 可编辑职位
+        EditableLabel *title = new EditableLabel("FW Qt Developer");
         title->setObjectName("title");
+        title->setStyleSheet("font-size: 13px; color: #555;");
 
-        QLabel *bio = new QLabel("Open source contributor | Working on AI projects  (really？");
+        // 可编辑个人简介
+        EditableBioLabel *bio = new EditableBioLabel("Open source contributor | Working on QT projects (really?) | CS undergraduate ");
         bio->setObjectName("bio");
+        bio->setStyleSheet("font-size: 12px; color: #666; padding-top: 5px;");
         bio->setWordWrap(true);
+
 
         m_checkInWidget = new CompactCheckInWidget(this);
         m_checkInWidget->setFixedHeight(200); // 设置合适高度
 
-        // 然后添加到布局中：
-        //infoLayout->addWidget(m_checkInWidget);
 
+        // 设置昵称回调
+        name->setTextChangedCallback([&](const QString& newName) {
+            QSettings settings;  // 在回调中创建新的 QSettings 对象
+            settings.setValue("user_name", newName);
+        });
+
+        title->setTextChangedCallback([&](const QString& newTitle) {
+            QSettings settings;  // 在回调中创建新的 QSettings 对象
+            settings.setValue("user_title", newTitle);
+        });
+
+        // 设置简介回调
+        bio->setTextChangedCallback([&](const QString& newBio) {
+            QSettings settings;  // 在回调中创建新的 QSettings 对象
+            settings.setValue("user_bio", newBio);
+        });
+
+
+        name->setText(settings.value("user_name", "Jamming Y").toString());
+        title->setText(settings.value("user_title", "FW Qt Developer | Amateur Football player | CS undergraduate ").toString());
+        bio->setText(settings.value("user_bio", "Open source contributor | Working on QT projects (really?) ").toString());
+
+
+        // 添加到布局
         infoLayout->addWidget(name);
+
+        //infoLayout->addWidget(region);
         infoLayout->addWidget(title);
         infoLayout->addWidget(bio);
         infoLayout->addWidget(m_checkInWidget);
         infoLayout->addStretch();
 
         leftLayout->addWidget(avatarContainer);
+
         leftLayout->addWidget(info);
+
+        // 连接编辑信号
+        //QSettings settings;
+        // connect(name, &EditableLabel::textChanged, [&](const QString& newName) {
+        //     settings.setValue("user_name", newName);
+        // });
+        // connect(title, &EditableLabel::textChanged, [&](const QString& newTitle) {
+        //     settings.setValue("user_title", newTitle);
+        // });
+        // connect(bio, &EditableBioLabel::textChanged, [&](const QString& newBio) {
+        //     settings.setValue("user_bio", newBio);
+        // });
+        // connect(region, &EditableLabel::textChanged, [&](const QString& newRegion) {
+        //     settings.setValue("user_region", newRegion);
+        // });
+        // connect(avatarLabel, &ClickableAvatarLabel::avatarChanged, [&](const QString& newPath) {
+        //     settings.setValue("user_avatar", newPath);
+        // });
+
 
     // ========== 右侧日历区域 ==========
     QWidget *calendarWidget = new QWidget;

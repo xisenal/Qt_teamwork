@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
@@ -32,7 +35,7 @@
   <widget class="QLineEdit" name="txtKeyword">
    <property name="geometry">
     <rect>
-     <x>180</x>
+     <x>190</x>
      <y>40</y>
      <width>381</width>
      <height>41</height>
@@ -42,9 +45,9 @@
   <widget class="QPushButton" name="btnsearch">
    <property name="geometry">
     <rect>
-     <x>610</x>
+     <x>620</x>
      <y>50</y>
-     <width>61</width>
+     <width>81</width>
      <height>31</height>
     </rect>
    </property>
