@@ -59,7 +59,7 @@ UserInfoDialog::UserInfoDialog(const QString &email, QWidget *parent)
 
     //QLabel *nameLabel = new QLabel(description, contentWidget);
     QLabel *nameLabel = new QLabel(QString("邮箱：3922909893@qq.com"));
-    nameLabel->setStyleSheet("font-size: 14px; font-weight: bold; color: #333;");
+    nameLabel->setStyleSheet("font-size: 10px; font-weight: bold; color: #333;");
     nameLabel->setAlignment(Qt::AlignCenter);
     //QLabel *idLabel = new QLabel(QString("学号：%1").arg(schoolId), contentWidget);
     QLabel *idLabel = new QLabel(QString("学号：2400012908"));
@@ -2063,7 +2063,7 @@ MainWindow::MainWindow(QWidget *parent)
     const QList<QPair<QString, QString>> navItems = {
         {"         主页", ":/resources/homepage.png"},
         {"        实验室", ":/resources/lab-innovation.png"},
-        {"         项目", ":/resources/google.png"},
+        {"         搜索", ":/resources/google.png"},
         {"      个人资料", ":/resources/edit.png"},
         {"     To Do List", ":/resources/to-do.png"}
     };
@@ -2136,6 +2136,7 @@ MainWindow::MainWindow(QWidget *parent)
         if (item.first.contains("实验室")) {
             labBtn = btn;  // 保存实验室按钮的指针
             // hideHomePage();
+            btn->setToolTip("实验室 - 实验室创建、管理与模拟");
             connect(labBtn, &QPushButton::clicked, [this](){
             //     canvasPage = new canvas();
             //     contentStack->addWidget(canvasPage);
@@ -2154,6 +2155,8 @@ MainWindow::MainWindow(QWidget *parent)
 
         if (item.first.contains("主页")) {
             homeBtn = btn;  // 保存主页按钮指针
+            btn->setToolTip("个人主页 - 首页内容");
+
             connect(homeBtn, &QPushButton::clicked, [this](){
                 //switchToHomePage(true);  // 强制刷新
                 // showHomePage();
@@ -2172,12 +2175,19 @@ MainWindow::MainWindow(QWidget *parent)
             connect(btn, &QPushButton::clicked, this, &MainWindow::showTodoList);
         }
 
-        else if (item.first.contains("项目")){
+        else if (item.first.contains("搜索")){
 
             searchbtn = btn;
             //在哪里声明？？？？？？
+            btn->setToolTip("X-Lab学术搜索 - 快速检索文献");
             connect(searchbtn, &QPushButton::clicked, this, &MainWindow::onProjectButtonClicked);
 
+        }
+
+        else if(item.first.contains("个人资料")){
+            profileBtn = btn;  // 保存个人资料按钮指针
+            btn->setToolTip("个人资料编辑 - 修改密码、邮箱等信息");
+            connect(profileBtn, &QPushButton::clicked, this, &MainWindow::showProfileDialog);
         }
     }
 
@@ -2537,4 +2547,13 @@ void MainWindow::showCheckInDialog()
 {
     m_checkInWidget->show();
     //m_checkInWidget->updateUI();
+}
+
+
+//5.29
+void MainWindow::showProfileDialog()
+{
+    ProfileDialog *dialog = new ProfileDialog(this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->exec();
 }

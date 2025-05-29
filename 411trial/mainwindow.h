@@ -5,6 +5,7 @@
 #include "todolistwindow.h"
 #include "apidialog.h"
 #include "checkinwidget.h"
+#include "profiledialog.h"
 
 
 #include <QMainWindow>
@@ -88,6 +89,8 @@ private slots:
     //void handleLabButtonClick();
     void onProjectButtonClicked(); // 响应按钮点击
 
+    void showProfileDialog();
+
 
 
 private:
@@ -112,6 +115,10 @@ private:
     QPushButton *homeBtn = nullptr; // 保存主页按钮指针
 
     QPointer<ApiDialog> apiDialog = nullptr; // 初始化为 nullptr
+
+
+    //5.29
+    QPushButton *profileBtn = nullptr;
 
 
     // 窗口拖动相关

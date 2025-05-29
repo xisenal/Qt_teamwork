@@ -18,6 +18,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     loginwindow.cpp \
+    profiledialog.cpp \
     usermanager.cpp \
     emailsender.cpp \
     adminwindow.cpp \
@@ -30,6 +31,7 @@ HEADERS += \
     mainwindow.h \
     loginwindow.h \
     profile_edit.h \
+    profiledialog.h \
     usermanager.h \
     emailsender.h \
     adminwindow.h \
