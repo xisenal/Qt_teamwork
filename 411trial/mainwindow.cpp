@@ -42,7 +42,10 @@ UserInfoDialog::UserInfoDialog(const QString &email, QWidget *parent)
     QLabel *avatarLabel = new QLabel(contentWidget);
     QPixmap avatarPixmap(avatarPath);
     if (avatarPixmap.isNull()) {
-        avatarPixmap = QPixmap(":/resources/user.png");
+        //avatarPixmap = QPixmap(":/resources/user.png");
+
+        //暂时修复user.db的bug
+        avatarPixmap = QPixmap(":/resources/avatar.png");
     }
     avatarPixmap = avatarPixmap.scaled(60, 60, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     avatarLabel->setPixmap(avatarPixmap);
@@ -54,10 +57,18 @@ UserInfoDialog::UserInfoDialog(const QString &email, QWidget *parent)
     infoLayout->setSpacing(5);
     infoLayout->setAlignment(Qt::AlignVCenter);
 
-    QLabel *nameLabel = new QLabel(description, contentWidget);
+    //QLabel *nameLabel = new QLabel(description, contentWidget);
+    QLabel *nameLabel = new QLabel(QString("邮箱：3922909893@qq.com"));
     nameLabel->setStyleSheet("font-size: 14px; font-weight: bold; color: #333;");
     nameLabel->setAlignment(Qt::AlignCenter);
-    QLabel *idLabel = new QLabel(QString("学号：%1").arg(schoolId), contentWidget);
+    //QLabel *idLabel = new QLabel(QString("学号：%1").arg(schoolId), contentWidget);
+    QLabel *idLabel = new QLabel(QString("学号：2400012908"));
+
+    // if (schoolId.isNull()) {
+    //     idLabel =new QLabel(QString("学号：2400012908"));
+
+
+    // }
     idLabel->setStyleSheet("font-size: 12px; color: #666;");
     idLabel->setAlignment(Qt::AlignCenter);
 
@@ -327,7 +338,8 @@ void MainWindow::createSubMenu() {
                     " background: transparent;" // 添加透明背景
                     "}"
                     "QToolButton:focus {"
-                    "   border-color: #0078D4;"
+                    "   //border-color: #0078D4;"
+                    "    border-color:#F0F0F0;"
                     "}"
                     "QToolButton:hover {"
                     "   background: #F0F0F0;"
@@ -1820,9 +1832,12 @@ QString MainWindow::getButtonActiveStyle() {
     return
         "QPushButton {"
         "   color: #1976D2;"
-        "   background-color: #E3F2FD;"
-        "   border-left: 3px solid #1976D2;"
+        "   background-color: white;"
+        "   border-left: 3px solid white;"
         "}";
+
+    //修复buttonstates和没用的变色逻辑
+    //5.29
 }
 
 
@@ -2110,7 +2125,7 @@ MainWindow::MainWindow(QWidget *parent)
             "}"
             "QPushButton:checked {"
             "   color: #1976D2;"
-            "   background-color: #E3F2FD;"
+            "   background-color: white;"
             "}");
         btn->setFixedHeight(50);
         navLayout->addWidget(btn);
@@ -2400,7 +2415,7 @@ void MainWindow::resetButtonStates(QPushButton *activeBtn)
             btn->setStyleSheet(
                 "QPushButton {"
                 "   color: #1976D2;"
-                "   background-color: #E3F2FD;"
+                "   background-color: white;"
                 "   border-left: 3px solid #1976D2;"
                 "}"
                 );
