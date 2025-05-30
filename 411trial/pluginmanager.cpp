@@ -1,12 +1,19 @@
 // pluginmanager.cpp
 #include "pluginmanager.h"
 #include <QDebug>
+#include <QDir>
+#include <QFile>
+#include <QFileDialog>
+#include <QStandardPaths>
+
+#include <QTimer>
+
 
 // PluginCard 实现
 PluginCard::PluginCard(const PluginData& data, QWidget *parent)
     : QFrame(parent), m_pluginData(data)
 {
-    setupUI();
+    PluginCard::setupUI();
 }
 
 void PluginCard::setupUI()
@@ -166,29 +173,84 @@ void PluginCard::onOpenClicked()
     emit pluginClicked(m_pluginData);
 }
 
-// LaTeXEditor 实现
+
 LaTeXEditor::LaTeXEditor(QWidget *parent)
     : QDialog(parent)
+    , m_latexProcess(nullptr)
+    , m_previewTimer(nullptr)
+    , m_autoPreviewEnabled(false)
+    , m_titleLabel(nullptr)
+    , m_savePathEdit(nullptr)
+    , m_browsePathBtn(nullptr)
+    , m_editor(nullptr)
+    , m_preview(nullptr)
+    , m_outputLog(nullptr)
+    , m_rightPanel(nullptr)
+    , m_compileBtn(nullptr)
+    , m_previewBtn(nullptr)
+    , m_autoPreviewBtn(nullptr)
+    , m_saveBtn(nullptr)
+    , m_clearLogBtn(nullptr)
+    , m_statusLabel(nullptr)
 {
+    // 创建临时目录
+    m_tempDir = QDir::tempPath() + "/latex_editor_" + QString::number(QCoreApplication::applicationPid());
+    QDir().mkpath(m_tempDir);
+
+    // 初始化预览定时器
+    m_previewTimer = new QTimer(this);
+    m_previewTimer->setSingleShot(true);
+    m_previewTimer->setInterval(1000); // 1秒延迟
+    connect(m_previewTimer, &QTimer::timeout, this, &LaTeXEditor::onAutoPreview);
+
     setupUI();
+}
+
+LaTeXEditor::~LaTeXEditor()
+{
+    if (m_latexProcess) {
+        m_latexProcess->kill();
+        m_latexProcess->waitForFinished(3000);
+    }
+
+    // 清理临时目录
+    QDir tempDir(m_tempDir);
+    if (tempDir.exists()) {
+        tempDir.removeRecursively();
+    }
 }
 
 void LaTeXEditor::setupUI()
 {
     setWindowTitle("LaTeX 编辑器");
-    setMinimumSize(1000, 700);
+    setMinimumSize(1200, 800);
 
     setStyleSheet(R"(
         QDialog {
+            background-color: #ffffff;
+        }
+        QLabel#titleLabel {
+            font-size: 18px;
+            font-weight: bold;
+            color: #0366d6;
+            padding: 10px;
+            text-align: center;
+        }
+        QLineEdit {
+            border: 1px solid #d0d7de;
+            border-radius: 4px;
+            padding: 6px;
+            font-size: 11px;
             background-color: #ffffff;
         }
         QTextEdit {
             border: 1px solid #d0d7de;
             border-radius: 4px;
             padding: 8px;
-            font-family: 'Consolas', 'Monaco', monospace;
+            font-family: 'Consolas', 'Courier New', monospace;
             font-size: 12px;
             line-height: 1.4;
+            background-color: #ffffff;
         }
         QPushButton {
             background-color: #0366d6;
@@ -203,63 +265,728 @@ void LaTeXEditor::setupUI()
         QPushButton:hover {
             background-color: #0256cc;
         }
+        QPushButton:disabled {
+            background-color: #6c757d;
+        }
+        QPushButton:checked {
+            background-color: #28a745;
+        }
+        QPushButton#browseBtn {
+            padding: 6px 12px;
+            font-size: 11px;
+        }
+        QTabWidget::pane {
+            border: 1px solid #d0d7de;
+            border-radius: 4px;
+        }
+        QTabBar::tab {
+            background-color: #f6f8fa;
+            border: 1px solid #d0d7de;
+            padding: 8px 16px;
+            border-radius: 4px 4px 0 0;
+        }
+        QTabBar::tab:selected {
+            background-color: #ffffff;
+            border-bottom-color: #ffffff;
+        }
     )");
 
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
 
+    // 标题栏
+    m_titleLabel = new QLabel("X-lab Latex Editor");
+    m_titleLabel->setObjectName("titleLabel");
+    m_titleLabel->setAlignment(Qt::AlignCenter);
+    mainLayout->addWidget(m_titleLabel);
+
+    // 保存路径设置栏
+    QHBoxLayout* pathLayout = new QHBoxLayout();
+    QLabel* pathLabel = new QLabel("默认保存路径:");
+    pathLabel->setStyleSheet("font-weight: bold; margin-right: 5px;");
+
+    m_defaultSavePath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/LaTeX";
+    QDir().mkpath(m_defaultSavePath); // 确保目录存在
+
+    m_savePathEdit = new QLineEdit(m_defaultSavePath);
+    m_savePathEdit->setMinimumWidth(300);
+
+    m_browsePathBtn = new QPushButton("浏览...");
+    m_browsePathBtn->setObjectName("browseBtn");
+
+    pathLayout->addWidget(pathLabel);
+    pathLayout->addWidget(m_savePathEdit);
+    pathLayout->addWidget(m_browsePathBtn);
+    pathLayout->addStretch();
+
+    mainLayout->addLayout(pathLayout);
+
     // 工具栏
     QHBoxLayout* toolbarLayout = new QHBoxLayout();
 
-    m_compileBtn = new QPushButton("编译");
-    m_previewBtn = new QPushButton("预览");
+    m_compileBtn = new QPushButton("编译 PDF");
+    m_previewBtn = new QPushButton("立即预览");
+    m_autoPreviewBtn = new QPushButton("自动预览: 关");
+    m_autoPreviewBtn->setCheckable(true);
     m_saveBtn = new QPushButton("保存");
+    m_clearLogBtn = new QPushButton("清除日志");
+
+    m_statusLabel = new QLabel("就绪");
+    m_statusLabel->setStyleSheet("color: #28a745; font-weight: bold; margin-left: 10px;");
 
     toolbarLayout->addWidget(m_compileBtn);
     toolbarLayout->addWidget(m_previewBtn);
+    toolbarLayout->addWidget(m_autoPreviewBtn);
     toolbarLayout->addWidget(m_saveBtn);
+    toolbarLayout->addWidget(m_clearLogBtn);
+    toolbarLayout->addWidget(m_statusLabel);
     toolbarLayout->addStretch();
 
-    // 编辑区域
+    // 主编辑区域
     QSplitter* splitter = new QSplitter(Qt::Horizontal);
 
+    // 左侧编辑器
     m_editor = new QTextEdit();
-    m_editor->setPlaceholderText("在此输入LaTeX代码...\n\n例如:\n\\documentclass{article}\n\\begin{document}\n\\title{我的文档}\n\\author{作者}\n\\maketitle\n\n\\section{简介}\n这是一个LaTeX文档示例。\n\n\\subsection{数学公式}\n爱因斯坦质能方程：$E = mc^2$\n\n\\end{document}");
+    m_editor->setPlaceholderText(R"(% LaTeX 文档示例
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
 
+\title{我的 LaTeX 文档}
+\author{作者姓名}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{引言}
+这是一个 LaTeX 文档示例。LaTeX 是一个高质量的排版系统，特别适合制作科技和数学文档。
+
+\section{数学公式}
+爱因斯坦的质能方程：
+\begin{equation}
+E = mc^2
+\end{equation}
+
+勾股定理：
+\begin{equation}
+a^2 + b^2 = c^2
+\end{equation}
+
+\section{列表}
+\begin{itemize}
+    \item 第一项
+    \item 第二项
+    \item 第三项
+\end{itemize}
+
+\section{结论}
+LaTeX 能够产生高质量的文档输出。
+
+\end{document})");
+
+    // 右侧面板（选项卡）
+    m_rightPanel = new QTabWidget();
+
+    // 预览选项卡
     m_preview = new QTextEdit();
     m_preview->setReadOnly(true);
-    m_preview->setPlaceholderText("编译预览将在此显示...");
+    m_preview->setPlaceholderText("实时预览将在此显示...\n\n");
+
+    // 输出日志选项卡
+    m_outputLog = new QTextEdit();
+    m_outputLog->setReadOnly(true);
+    m_outputLog->setPlaceholderText("编译输出和错误信息将在此显示...");
+    m_outputLog->setStyleSheet(m_outputLog->styleSheet() + "font-family: 'Consolas', 'Courier New', monospace; font-size: 10px;");
+
+    m_rightPanel->addTab(m_preview, "预览");
+    m_rightPanel->addTab(m_outputLog, "编译日志");
 
     splitter->addWidget(m_editor);
-    splitter->addWidget(m_preview);
-    splitter->setSizes({500, 500});
+    splitter->addWidget(m_rightPanel);
+    splitter->setSizes({600, 600});
 
     mainLayout->addLayout(toolbarLayout);
     mainLayout->addWidget(splitter);
 
+    // 连接信号槽
     connect(m_compileBtn, &QPushButton::clicked, this, &LaTeXEditor::onCompileClicked);
     connect(m_previewBtn, &QPushButton::clicked, this, &LaTeXEditor::onPreviewClicked);
+    connect(m_autoPreviewBtn, &QPushButton::toggled, this, &LaTeXEditor::onAutoPreviewToggled);
     connect(m_saveBtn, &QPushButton::clicked, this, &LaTeXEditor::onSaveClicked);
+    connect(m_clearLogBtn, &QPushButton::clicked, [this]() {
+        m_outputLog->clear();
+    });
+    connect(m_browsePathBtn, &QPushButton::clicked, this, &LaTeXEditor::onBrowsePathClicked);
+    connect(m_editor, &QTextEdit::textChanged, this, &LaTeXEditor::onTextChanged);
 }
 
-void LaTeXEditor::onCompileClicked()
+void LaTeXEditor::onBrowsePathClicked()
 {
+    QString dir = QFileDialog::getExistingDirectory(this,
+                                                    "选择默认保存目录",
+                                                    m_savePathEdit->text(),
+                                                    QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (!dir.isEmpty()) {
+        m_savePathEdit->setText(dir);
+        m_defaultSavePath = dir;
+    }
+}
+
+void LaTeXEditor::onTextChanged()
+{
+    if (m_autoPreviewEnabled) {
+        m_previewTimer->stop();
+        m_previewTimer->start(); // 重新开始计时
+    }
+}
+
+void LaTeXEditor::onAutoPreviewToggled(bool enabled)
+{
+    m_autoPreviewEnabled = enabled;
+    if (enabled) {
+        m_autoPreviewBtn->setText("自动预览: 开");
+        onAutoPreview(); // 立即预览一次
+    } else {
+        m_autoPreviewBtn->setText("自动预览: 关");
+        m_previewTimer->stop();
+    }
+}
+
+void LaTeXEditor::onAutoPreview()
+{
+    if (!m_autoPreviewEnabled) return;
+
     QString content = m_editor->toPlainText();
-    // 这里可以调用实际的LaTeX编译器
-    m_preview->setText("编译结果：\n" + content + "\n\n[注：这里应该是编译后的输出结果]");
+    if (content.trimmed().isEmpty()) return;
+
+    // 生成HTML预览
+    generateHTMLPreview(content);
+}
+
+void LaTeXEditor::generateHTMLPreview(const QString& latexContent)
+{
+    QString html = convertLaTeXToHTML(latexContent);
+    m_preview->setHtml(html);
+
+    // 切换到预览标签页
+    m_rightPanel->setCurrentIndex(0);
+}
+
+QString LaTeXEditor::convertLaTeXToHTML(const QString& latex)
+{
+    QString html = R"(
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>LaTeX Preview</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: white;
+        }
+        h1 { font-size: 2em; text-align: center; margin-bottom: 0.5em; }
+        h2 { font-size: 1.5em; margin-top: 1.5em; margin-bottom: 0.5em; }
+        h3 { font-size: 1.2em; margin-top: 1.2em; margin-bottom: 0.4em; }
+        .author { text-align: center; font-style: italic; margin-bottom: 1em; }
+        .date { text-align: center; margin-bottom: 2em; }
+        .equation {
+            text-align: center;
+            margin: 1em 0;
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+        ul { margin: 1em 0; padding-left: 2em; }
+        li { margin: 0.3em 0; }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+)";
+
+    QString content = latex;
+
+    // 基本转换规则
+    QStringList lines = content.split('\n');
+    QString body;
+    bool inDocument = false;
+    bool inEquation = false;
+    bool inItemize = false;
+
+    for (const QString& line : lines) {
+        QString trimmedLine = line.trimmed();
+
+        if (trimmedLine.contains("\\begin{document}")) {
+            inDocument = true;
+            continue;
+        }
+        if (trimmedLine.contains("\\end{document}")) {
+            break;
+        }
+        if (!inDocument) continue;
+
+        // 标题处理
+        if (trimmedLine.contains("\\maketitle")) {
+            body += "<div class='title-section'></div>\n";
+        }
+        else if (trimmedLine.startsWith("\\title{")) {
+            QString title = extractBraceContent(trimmedLine, "\\title{");
+            body += "<h1>" + title + "</h1>\n";
+        }
+        else if (trimmedLine.startsWith("\\author{")) {
+            QString author = extractBraceContent(trimmedLine, "\\author{");
+            body += "<div class='author'>" + author + "</div>\n";
+        }
+        else if (trimmedLine.startsWith("\\date{")) {
+            QString date = extractBraceContent(trimmedLine, "\\date{");
+            if (date == "\\today") date = QDate::currentDate().toString("yyyy年MM月dd日");
+            body += "<div class='date'>" + date + "</div>\n";
+        }
+        // 章节处理
+        else if (trimmedLine.startsWith("\\section{")) {
+            QString section = extractBraceContent(trimmedLine, "\\section{");
+            body += "<h2>" + section + "</h2>\n";
+        }
+        else if (trimmedLine.startsWith("\\subsection{")) {
+            QString subsection = extractBraceContent(trimmedLine, "\\subsection{");
+            body += "<h3>" + subsection + "</h3>\n";
+        }
+        // 公式处理
+        else if (trimmedLine.contains("\\begin{equation}")) {
+            inEquation = true;
+            body += "<div class='equation'>\n";
+        }
+        else if (trimmedLine.contains("\\end{equation}")) {
+            inEquation = false;
+            body += "</div>\n";
+        }
+        // 列表处理
+        else if (trimmedLine.contains("\\begin{itemize}")) {
+            inItemize = true;
+            body += "<ul>\n";
+        }
+        else if (trimmedLine.contains("\\end{itemize}")) {
+            inItemize = false;
+            body += "</ul>\n";
+        }
+        else if (trimmedLine.startsWith("\\item")) {
+            QString item = trimmedLine.mid(5).trimmed();
+            body += "<li>" + item + "</li>\n";
+        }
+        // 普通文本
+        else if (!trimmedLine.isEmpty() && !trimmedLine.startsWith("%") && !trimmedLine.startsWith("\\")) {
+            if (inEquation) {
+                body += "<em>" + trimmedLine + "</em><br>\n";
+            } else {
+                body += "<p>" + trimmedLine + "</p>\n";
+            }
+        }
+    }
+
+    //html += "<div class='warning'>⚠️ 这是简化的HTML预览，实际LaTeX输出可能有所不同。点击"编译PDF"查看准确结果。</div>\n";
+    html += body;
+    html += "</body></html>";
+
+    return html;
+}
+
+QString LaTeXEditor::extractBraceContent(const QString& line, const QString& command)
+{
+    int start = line.indexOf(command);
+    if (start == -1) return "";
+
+    start += command.length();
+    int braceCount = 0;
+    int end = start;
+
+    for (int i = start; i < line.length(); ++i) {
+        if (line[i] == '{') braceCount++;
+        else if (line[i] == '}') {
+            braceCount--;
+            if (braceCount == 0) {
+                end = i;
+                break;
+            }
+        }
+    }
+
+    return line.mid(start, end - start);
 }
 
 void LaTeXEditor::onPreviewClicked()
 {
     QString content = m_editor->toPlainText();
-    // 简单的预览功能
-    m_preview->setText("预览：\n" + content);
+    if (content.trimmed().isEmpty()) {
+        return;
+    }
+
+    generateHTMLPreview(content);
+}
+
+// 保持原有的编译相关方法不变
+bool LaTeXEditor::compileLaTeX(const QString& content)
+{
+    // 创建临时 .tex 文件
+    m_currentFile = m_tempDir + "/document.tex";
+    QFile file(m_currentFile);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        m_outputLog->append("错误：无法创建临时文件");
+        return false;
+    }
+
+    QTextStream out(&file);
+    out.setEncoding(QStringConverter::Utf8);
+    out << content;
+    file.close();
+
+    // 设置状态
+    m_statusLabel->setText("编译中...");
+    m_statusLabel->setStyleSheet("color: #ffc107; font-weight: bold; margin-left: 10px;");
+    m_compileBtn->setEnabled(false);
+
+    // 创建进程
+    if (m_latexProcess) {
+        m_latexProcess->kill();
+        m_latexProcess->deleteLater();
+    }
+
+    m_latexProcess = new QProcess(this);
+    connect(m_latexProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+            this, &LaTeXEditor::onProcessFinished);
+    connect(m_latexProcess, &QProcess::errorOccurred, this, &LaTeXEditor::onProcessError);
+
+    // 设置工作目录
+    m_latexProcess->setWorkingDirectory(m_tempDir);
+
+    // 执行 pdflatex
+    QStringList arguments;
+    arguments << "-interaction=nonstopmode" << "-output-directory=" + m_tempDir << m_currentFile;
+
+    m_outputLog->append("开始编译...");
+    m_outputLog->append("命令: pdflatex " + arguments.join(" "));
+    m_outputLog->append("工作目录: " + m_tempDir);
+    m_outputLog->append("========================================");
+
+    m_latexProcess->start("pdflatex", arguments);
+
+    return true;
+}
+
+void LaTeXEditor::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
+{
+    m_compileBtn->setEnabled(true);
+
+    if (exitStatus == QProcess::CrashExit) {
+        m_statusLabel->setText("编译崩溃");
+        m_statusLabel->setStyleSheet("color: #dc3545; font-weight: bold; margin-left: 10px;");
+        m_outputLog->append("编译进程崩溃！");
+        return;
+    }
+
+    // 获取输出
+    QString output = QString::fromLocal8Bit(m_latexProcess->readAllStandardOutput());
+    QString errorOutput = QString::fromLocal8Bit(m_latexProcess->readAllStandardError());
+
+    m_outputLog->append("标准输出:");
+    m_outputLog->append(output);
+    if (!errorOutput.isEmpty()) {
+        m_outputLog->append("错误输出:");
+        m_outputLog->append(errorOutput);
+    }
+    m_outputLog->append("========================================");
+
+    if (exitCode == 0) {
+        m_statusLabel->setText("编译成功");
+        m_statusLabel->setStyleSheet("color: #28a745; font-weight: bold; margin-left: 10px;");
+
+        // 检查是否生成了 PDF 文件
+        QString pdfFile = m_tempDir + "/document.pdf";
+        if (QFile::exists(pdfFile)) {
+            m_outputLog->append("PDF 文件已生成: " + pdfFile);
+            m_preview->setText("编译成功！\n\nPDF 文件已生成：\n" + pdfFile +
+                               "\n\n请使用系统默认的 PDF 阅读器打开查看。");
+        } else {
+            m_outputLog->append("警告：编译成功但未找到 PDF 文件");
+        }
+    } else {
+        m_statusLabel->setText("编译失败");
+        m_statusLabel->setStyleSheet("color: #dc3545; font-weight: bold; margin-left: 10px;");
+        m_preview->setText("编译失败，请查看编译日志获取详细错误信息。");
+    }
+
+    m_latexProcess->deleteLater();
+    m_latexProcess = nullptr;
+}
+
+void LaTeXEditor::onProcessError(QProcess::ProcessError error)
+{
+    m_compileBtn->setEnabled(true);
+    m_statusLabel->setText("编译错误");
+    m_statusLabel->setStyleSheet("color: #dc3545; font-weight: bold; margin-left: 10px;");
+
+    QString errorString;
+    switch (error) {
+    case QProcess::FailedToStart:
+        errorString = "无法启动 pdflatex。请确保已安装 LaTeX 发行版。";
+        break;
+    case QProcess::Crashed:
+        errorString = "pdflatex 进程崩溃";
+        break;
+    case QProcess::Timedout:
+        errorString = "pdflatex 进程超时";
+        break;
+    case QProcess::ReadError:
+        errorString = "读取 pdflatex 输出时出错";
+        break;
+    case QProcess::WriteError:
+        errorString = "写入 pdflatex 输入时出错";
+        break;
+    default:
+        errorString = "未知的 pdflatex 错误";
+        break;
+    }
+
+    m_outputLog->append("进程错误: " + errorString);
+    m_preview->setText("编译失败：" + errorString);
+}
+
+void LaTeXEditor::onCompileClicked()
+{
+    QString content = m_editor->toPlainText();
+    if (content.trimmed().isEmpty()) {
+        m_outputLog->append("错误：编辑器内容为空");
+        return;
+    }
+
+    compileLaTeX(content);
 }
 
 void LaTeXEditor::onSaveClicked()
 {
-    // 这里可以添加保存文件的逻辑
-    qDebug() << "保存LaTeX文档";
+    QString defaultFileName = m_savePathEdit->text() + "/document.tex";
+    QString fileName = QFileDialog::getSaveFileName(this,
+                                                    "保存 LaTeX 文件",
+                                                    defaultFileName,
+                                                    "LaTeX Files (*.tex);;All Files (*)");
+    if (!fileName.isEmpty()) {
+        QFile file(fileName);
+        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QTextStream out(&file);
+            out.setEncoding(QStringConverter::Utf8);
+            out << m_editor->toPlainText();
+            file.close();
+            m_outputLog->append("文件已保存: " + fileName);
+            m_statusLabel->setText("已保存");
+            m_statusLabel->setStyleSheet("color: #28a745; font-weight: bold; margin-left: 10px;");
+        } else {
+            m_outputLog->append("错误：无法保存文件 " + fileName);
+        }
+    }
 }
+
+
+
+
+
+
+// bool LaTeXEditor::compileLaTeX(const QString& content)
+// {
+//     // 创建临时 .tex 文件
+//     m_currentFile = m_tempDir + "/document.tex";
+//     QFile file(m_currentFile);
+//     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+//         m_outputLog->append("错误：无法创建临时文件");
+//         return false;
+//     }
+
+//     QTextStream out(&file);
+//     //out.setCodec("UTF-8");
+//     out.setEncoding(QStringConverter::Utf8);
+//     out << content;
+//     file.close();
+
+//     // 设置状态
+//     m_statusLabel->setText("编译中...");
+//     m_statusLabel->setStyleSheet("color: #ffc107; font-weight: bold; margin-left: 10px;");
+//     m_compileBtn->setEnabled(false);
+
+//     // 创建进程
+//     if (m_latexProcess) {
+//         m_latexProcess->kill();
+//         m_latexProcess->deleteLater();
+//     }
+
+//     m_latexProcess = new QProcess(this);
+//     connect(m_latexProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+//             this, &LaTeXEditor::onProcessFinished);
+//     connect(m_latexProcess, &QProcess::errorOccurred, this, &LaTeXEditor::onProcessError);
+
+//     // 设置工作目录
+//     m_latexProcess->setWorkingDirectory(m_tempDir);
+
+//     // 执行 pdflatex
+//     QStringList arguments;
+//     arguments << "-interaction=nonstopmode" << "-output-directory=" + m_tempDir << m_currentFile;
+
+//     m_outputLog->append("开始编译...");
+//     m_outputLog->append("命令: pdflatex " + arguments.join(" "));
+//     m_outputLog->append("工作目录: " + m_tempDir);
+//     m_outputLog->append("========================================");
+
+//     m_latexProcess->start("pdflatex", arguments);
+
+//     return true;
+// }
+
+// void LaTeXEditor::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
+// {
+//     m_compileBtn->setEnabled(true);
+
+//     if (exitStatus == QProcess::CrashExit) {
+//         m_statusLabel->setText("编译崩溃");
+//         m_statusLabel->setStyleSheet("color: #dc3545; font-weight: bold; margin-left: 10px;");
+//         m_outputLog->append("编译进程崩溃！");
+//         return;
+//     }
+
+//     // 获取输出
+//     QString output = QString::fromLocal8Bit(m_latexProcess->readAllStandardOutput());
+//     QString errorOutput = QString::fromLocal8Bit(m_latexProcess->readAllStandardError());
+
+//     m_outputLog->append("标准输出:");
+//     m_outputLog->append(output);
+//     if (!errorOutput.isEmpty()) {
+//         m_outputLog->append("错误输出:");
+//         m_outputLog->append(errorOutput);
+//     }
+//     m_outputLog->append("========================================");
+
+//     if (exitCode == 0) {
+//         m_statusLabel->setText("编译成功");
+//         m_statusLabel->setStyleSheet("color: #28a745; font-weight: bold; margin-left: 10px;");
+
+//         // 检查是否生成了 PDF 文件
+//         QString pdfFile = m_tempDir + "/document.pdf";
+//         if (QFile::exists(pdfFile)) {
+//             m_outputLog->append("PDF 文件已生成: " + pdfFile);
+//             m_preview->setText("编译成功！\n\nPDF 文件已生成：\n" + pdfFile +
+//                                "\n\n请使用系统默认的 PDF 阅读器打开查看。\n\n" +
+//                                "注意：当前版本暂不支持在界面内直接预览 PDF，" +
+//                                "建议使用外部 PDF 阅读器查看编译结果。");
+//         } else {
+//             m_outputLog->append("警告：编译成功但未找到 PDF 文件");
+//         }
+//     } else {
+//         m_statusLabel->setText("编译失败");
+//         m_statusLabel->setStyleSheet("color: #dc3545; font-weight: bold; margin-left: 10px;");
+//         m_preview->setText("编译失败，请查看编译日志获取详细错误信息。\n\n常见问题：\n1. 检查 LaTeX 语法是否正确\n2. 确保安装了 pdflatex\n3. 检查包依赖是否满足");
+//     }
+
+//     m_latexProcess->deleteLater();
+//     m_latexProcess = nullptr;
+// }
+
+// void LaTeXEditor::onProcessError(QProcess::ProcessError error)
+// {
+//     m_compileBtn->setEnabled(true);
+//     m_statusLabel->setText("编译错误");
+//     m_statusLabel->setStyleSheet("color: #dc3545; font-weight: bold; margin-left: 10px;");
+
+//     QString errorString;
+//     switch (error) {
+//     case QProcess::FailedToStart:
+//         errorString = "无法启动 pdflatex。请确保已安装 LaTeX 发行版（如 TeX Live 或 MiKTeX）并且 pdflatex 在系统 PATH 中。";
+//         break;
+//     case QProcess::Crashed:
+//         errorString = "pdflatex 进程崩溃";
+//         break;
+//     case QProcess::Timedout:
+//         errorString = "pdflatex 进程超时";
+//         break;
+//     case QProcess::ReadError:
+//         errorString = "读取 pdflatex 输出时出错";
+//         break;
+//     case QProcess::WriteError:
+//         errorString = "写入 pdflatex 输入时出错";
+//         break;
+//     default:
+//         errorString = "未知的 pdflatex 错误";
+//         break;
+//     }
+
+//     m_outputLog->append("进程错误: " + errorString);
+//     m_outputLog->append("========================================");
+//     m_preview->setText("编译失败：" + errorString + "\n\n解决方案：\n1. 安装 LaTeX 发行版（推荐 TeX Live）\n2. 确保 pdflatex 命令可在命令行中运行\n3. 重启应用程序");
+// }
+
+// void LaTeXEditor::onCompileClicked()
+// {
+//     QString content = m_editor->toPlainText();
+//     if (content.trimmed().isEmpty()) {
+//         m_outputLog->append("错误：编辑器内容为空");
+//         return;
+//     }
+
+//     compileLaTeX(content);
+// }
+
+// void LaTeXEditor::onPreviewClicked()
+// {
+//     QString content = m_editor->toPlainText();
+//     if (content.trimmed().isEmpty()) {
+//         return;
+//     }
+
+//     // 实时预览（简化版本，显示源码结构）
+//     m_preview->setText("LaTeX 源码预览：\n\n" + content +
+//                        "\n\n提示：点击'编译 PDF'按钮进行完整编译。");
+//     m_rightPanel->setCurrentIndex(0); // 切换到预览标签页
+// }
+
+// // void LaTeXEditor::onSaveClicked()
+// // {
+// //     QString fileName = QFileDialog::getSaveFileName(this,
+// //                                                     "保存 LaTeX 文件",
+// //                                                     "document.tex",
+// //                                                     "LaTeX Files (*.tex);;All Files (*)");
+// //     if (!fileName.isEmpty()) {
+// //         QFile file(fileName);
+// //         if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+// //             QTextStream out(&file);
+// //             //out.setCodec("UTF-8");
+// //             out.setEncoding(QStringConverter::Utf8);
+// //             out << m_editor->toPlainText();
+// //             file.close();
+// //             m_outputLog->append("文件已保存: " + fileName);
+// //             m_statusLabel->setText("已保存");
+// //             m_statusLabel->setStyleSheet("color: #28a745; font-weight: bold; margin-left: 10px;");
+// //         } else {
+// //             m_outputLog->append("错误：无法保存文件 " + fileName);
+// //         }
+// //     }
+// // }
+
+
+
+
+
+
+
 
 // PluginManager 实现
 PluginManager::PluginManager(QWidget *parent)
