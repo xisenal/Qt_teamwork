@@ -1,6 +1,13 @@
 // mainwindow.cpp
 #include "mainwindow.h"
 #include "usermanager.h"
+// #include "plugin_interface.h"
+#include "pluginmanager.h"
+// #include "host_interface.h"
+
+#include "pluginmanagerdialog.h"
+
+
 #include <profile_edit.h>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -2069,7 +2076,8 @@ MainWindow::MainWindow(QWidget *parent)
         {"        实验室", ":/resources/lab-innovation.png"},
         {"         搜索", ":/resources/google.png"},
         {"      个人资料", ":/resources/edit.png"},
-        {"     To Do List", ":/resources/to-do.png"}
+        {"     To Do List", ":/resources/to-do.png"},
+        {"      plugin", ":/resources/plugin.png"}
     };
 
     // 用户信息容器
@@ -2208,6 +2216,15 @@ MainWindow::MainWindow(QWidget *parent)
             profileBtn = btn;  // 保存个人资料按钮指针
             btn->setToolTip("个人资料编辑 - 修改密码、邮箱等信息");
             connect(profileBtn, &QPushButton::clicked, this, &MainWindow::showProfileDialog);
+        }
+
+
+
+        else if(item.first.contains("plugin")){
+            pluginBtn = btn;
+            btn->setToolTip("插件管理 - 添加你的插件");
+                connect(pluginBtn, &QPushButton::clicked, this, &MainWindow::showPluginManager);
+
         }
     }
 
@@ -2590,3 +2607,82 @@ void MainWindow::updateAvatar()
 
     avatar->setPixmap(pix);
 }
+
+
+
+
+
+
+
+
+
+//5.30 插件
+
+void MainWindow::showPluginManager()
+{
+    // 显示插件管理对话框
+    // 这里可以创建一个专门的插件管理界面
+    //QStringList loadedPlugins = m_pluginManager->getPluginNames();
+    //QString message = "Loaded plugins:\n" + loadedPlugins.join("\n");
+
+    // QMessageBox::information(this, "Plugin Manager", message);
+
+    // QApplication app(argc, argv);
+
+    // PluginManager manager;
+    // manager.show();
+
+    // return app.exec();
+
+
+    // 修改MainWindow中的showPluginManager函数
+
+    // 方法1：作为独立窗口显示
+    PluginManager* manager = new PluginManager(this);
+    manager->show();
+
+    //是否作为dialog
+    // PluginManagerDialog* dialog = new PluginManagerDialog(this);
+    // dialog->show(); // 非模态显示
+
+    // 方法2：作为模态对话框显示（可选）
+    // PluginManager* manager = new PluginManager(this);
+    // manager->setWindowModality(Qt::ApplicationModal);
+    // manager->exec();
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// void MainWindow::loadPlugins()
+// {
+//     // 从应用程序目录的 plugins 子目录加载插件
+//     QString pluginDir = QApplication::applicationDirPath() + "/plugins";
+//     m_pluginManager->loadPlugins(pluginDir);
+// }
+
+// void MainWindow::onPluginLoaded(const QString& name)
+// {
+//     PluginInterface* plugin = m_pluginManager->getPlugin(name);
+//     if (plugin) {
+//         // 设置主程序接口
+//         plugin->setHostInterface(m_hostInterface);
+
+//         // 创建插件界面
+//         QWidget* widget = plugin->createWidget(m_pluginTabs);
+//         if (widget) {
+//             m_pluginTabs->addTab(widget, name);
+//         }
+
+//         //statusBar()->showMessage(QString("Plugin loaded: %1").arg(name), 2000);
+//     }
+// }

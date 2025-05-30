@@ -20,6 +20,8 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     loginwindow.cpp \
+    pluginmanager.cpp \
+    pluginmanagerdialog.cpp \
     profiledialog.cpp \
     usermanager.cpp \
     emailsender.cpp \
@@ -34,6 +36,9 @@ HEADERS += \
     checkinwidget.h \
     mainwindow.h \
     loginwindow.h \
+    plugin_interface.h \
+    pluginmanager.h \
+    pluginmanagerdialog.h \
     profile_edit.h \
     profiledialog.h \
     usermanager.h \

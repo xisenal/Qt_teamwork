@@ -8,6 +8,9 @@
 #include "profiledialog.h"
 #include "avatarmanager.h"
 
+// #include "pluginmanager.h"
+// #include "host_interface.h"
+
 
 #include <QMainWindow>
 #include <QPushButton>
@@ -144,6 +147,28 @@ private:
     QTextEdit *defaultContent;     // 原有内容区域改为成员变量
 
     void showCheckInDialog();
+
+
+
+
+
+
+    //5.30 插件接口
+private slots:
+    // void onPluginLoaded(const QString& name);
+    // void onPluginUnloaded(const QString& name);
+    void showPluginManager();
+
+private:
+    // void setupUI();
+    // void loadPlugins();
+    QPushButton* pluginBtn = nullptr;
+
+    // QTextEdit* m_textEditor;
+    // QTabWidget* m_pluginTabs;
+    // // PluginManager* m_pluginManager;
+    // // HostInterface* m_hostInterface;
+    // QDockWidget* m_pluginDock;
 };
 
 // // 在类定义中添加样式常量

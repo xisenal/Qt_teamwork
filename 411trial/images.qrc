@@ -29,6 +29,7 @@
 	<file>resources/edit.png</file>
 	<file>resources/newavatar.jpg</file>
 	<file>resources/newavatar.png</file>
+	<file>resources/plugin.png</file>
 
     </qresource>
 </RCC>
