@@ -30,6 +30,14 @@
 	<file>resources/newavatar.jpg</file>
 	<file>resources/newavatar.png</file>
 	<file>resources/plugin.png</file>
+	<file>resources/python.png</file>
+	<file>resources/c-.png</file>
+	<file>resources/latex.png</file>
+	<file>resources/extension.png</file>
+	<file>resources/trash.png</file>
+        <file>resources/SLM.png</file>
+        <file>resources/EpCirclePlus.png</file>
+	<file>resources/button.png</file>
 
     </qresource>
 </RCC>

@@ -1733,8 +1733,11 @@ QWidget*   MainWindow::createProfileCard()
                 } else if (currentDay == 26) {
                     // 26日不活跃
                     isActive = false;
+
+                } else if(currentDay == 30){
+                    isActive = false;
                 } else {
-                    // 27-31日活跃
+                    // 27-30日活跃
                     isActive = true;
                 }
 
@@ -1762,7 +1765,7 @@ QWidget*   MainWindow::createProfileCard()
             if (currentDay >= 1 && currentDay <= 25) {
                 // 1-25日随机活跃
                 isActive = QRandomGenerator::global()->bounded(3) == 0;
-            } else if (currentDay == 26) {
+            } else if (currentDay == 26  || currentDay == 31) {
                 // 26日不活跃
                 isActive = false;
             } else {
@@ -2077,7 +2080,7 @@ MainWindow::MainWindow(QWidget *parent)
         {"         搜索", ":/resources/google.png"},
         {"      个人资料", ":/resources/edit.png"},
         {"     To Do List", ":/resources/to-do.png"},
-        {"      plugin", ":/resources/plugin.png"}
+        {"      plugin", ":/resources/extension.png"}
     };
 
     // 用户信息容器

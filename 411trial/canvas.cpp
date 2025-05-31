@@ -11,11 +11,17 @@
 #include <QPixmap>
 #include <QLayout>
 #include <QApplication> // 新增头文件用于获取鼠标位置
+#include <QIcon>
+#include <QSize>
 
 // 判断坐标是否位于右侧禁止移动区域（假设右侧200像素为限制区域）
 bool canvas::isRightRegion(const QPoint& pos) const {
     return pos.x() > (width() - 200);
 }
+
+// 新增删除热区半径
+// constexpr int TRASH_ZONE_RADIUS = 30;
+constexpr int DELETE_DELAY_MS = 800;
 
 canvas::canvas(QWidget *parent)
     : QWidget(parent)
@@ -72,11 +78,87 @@ canvas::canvas(QWidget *parent)
     label3->resize(scaled3.size());  // 关键点：同步调整控件尺寸
     label3->setAttribute(Qt::WA_DeleteOnClose); // 当窗口关闭时销毁图片
 
+    label4 = new QLabel(this);          // 创建标签
+    QPixmap pix4(":/resources/SLM.png");
+    QPixmap scaled4 = pix4.scaled(100, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    label4->setPixmap(scaled4);
+    label4->resize(scaled4.size());  // 关键点：同步调整控件尺寸
+    label4->setAttribute(Qt::WA_DeleteOnClose); // 当窗口关闭时销毁图片
+
+    // 新增删除热区初始化
+    m_trashIcon = new QLabel(this);
+    m_trashIcon->setPixmap(QPixmap(":/resources/trash.png").scaled(40, 40));
+    m_trashIcon->setFixedSize(60, 60);
+    m_trashIcon->setScaledContents(true);  // 关键修改：允许图片自动缩放
+    m_trashIcon->setAlignment(Qt::AlignCenter);  // 关键修改：内容居中
+    m_trashIcon->setStyleSheet(
+        "background: rgba(255, 50, 50, 30);"
+        "border-radius: 30px;"
+        "border: 2px solid rgba(255, 50, 50, 150);");
+    m_trashIcon->hide();
+
+    m_deleteTimer = new QTimer(this);
+    m_deleteTimer->setSingleShot(true);
+    connect(m_deleteTimer, &QTimer::timeout, this, &canvas::handleDeleteTimeout);
+
+    m_button = new QPushButton(this);
+    // m_button->setGeometry(posx, 550, 40, 40);
+    m_button->resize(50, 50);
+    m_button->setIcon(QIcon(":/resources/EpCirclePlus.png"));
+    m_button->setIconSize(QSize(50, 50));
+    m_button->setStyleSheet("border: none; background: transparent;");
+    // m_button->setText("添加新仪器");
+    connect(m_button, &QPushButton::clicked, [=](){
+        if (!seaDialog) {
+            seaDialog = new SeaDialog(this); // 延迟初始化
+        }
+        seaDialog->show(); // 显示弹窗
+    });
 }
 
 canvas::~canvas()
 {
     delete ui;
+}
+
+// 新增辅助函数
+bool canvas::isInTrashArea(const QPoint &pos) const
+{
+    return m_trashIcon->geometry().adjusted(-10, -10, 10, 10).contains(pos);
+}
+
+void canvas::updateTrashPosition()
+{
+    QPoint trashPos(width() - 270, height() - 70);
+    m_trashIcon->move(trashPos);
+}
+
+void canvas::startTrashAnimation(bool expanding)
+{
+    if(m_trashAnim && m_trashAnim->state() == QAbstractAnimation::Running)
+        return;
+
+    QRect start = m_trashIcon->geometry();
+    QRect end = start.adjusted(expanding ? -10 : 10,
+                               expanding ? -10 : 10,
+                               expanding ? 20 : -20,
+                               expanding ? 20 : -20);
+
+    m_trashAnim = new QPropertyAnimation(m_trashIcon, "geometry", this);
+    m_trashAnim->setDuration(300);
+    m_trashAnim->setStartValue(start);
+    m_trashAnim->setEndValue(end);
+    m_trashAnim->start();
+}
+
+void canvas::resetTrashState()
+{
+    m_deleteTimer->stop();
+    m_trashIcon->hide();
+    m_trashIcon->setStyleSheet(// 恢复原始样式
+        "background: rgba(255, 50, 50, 30);"
+        "border-radius: 30px;"
+        "border: 2px solid rgba(255, 50, 50, 150);");
 }
 
 void canvas::mousePressEvent(QMouseEvent *event)   //鼠标按下事件
@@ -96,7 +178,9 @@ void canvas::mousePressEvent(QMouseEvent *event)   //鼠标按下事件
     QByteArray itemData;                                     // 创建字节数组
     QDataStream dataStream(&itemData, QIODevice::WriteOnly); // 创建数据流
     // 将图片信息，位置信息输入到字节数组中
-    dataStream << pixmap << QPoint(event->pos() - child->pos());
+    // dataStream << pixmap << QPoint(event->pos() - child->pos());
+    dataStream << pixmap << QPoint(event->pos() - child->pos())
+               << reinterpret_cast<quintptr>(child);
 
     // 第三步：将数据放入QMimeData中
     QMimeData *mimeData = new QMimeData;  // 创建QMimeData用来存放要移动的数据
@@ -172,6 +256,11 @@ void canvas::dragEnterEvent(QDragEnterEvent *event) // 拖动进入事件
             event->accept();
         }
 
+        updateTrashPosition();
+        m_trashIcon->show();
+        startTrashAnimation(true);
+        event->acceptProposedAction();
+
     } else {
         event->ignore();
     }
@@ -179,8 +268,26 @@ void canvas::dragEnterEvent(QDragEnterEvent *event) // 拖动进入事件
 void canvas::dragMoveEvent(QDragMoveEvent *event)   // 拖动事件
 {
     if (event->mimeData()->hasFormat("myimage/png")) {
+        const bool inTrash = isInTrashArea(event->position().toPoint());
+
+        // 更新热区样式
+        m_trashIcon->setStyleSheet(QString(
+                                       "background: rgba(255, 50, 50, %1);"
+                                       "border-radius: 30px;"
+                                       "border: 2px solid rgba(255, 50, 50, %2);")
+                                       .arg(inTrash ? "120" : "30")
+                                       .arg(inTrash ? "200" : "150"));
+
+        // 管理删除计时器
+        if(inTrash && !m_deleteTimer->isActive()) {
+            m_deleteTimer->start(DELETE_DELAY_MS);
+        } else if(!inTrash) {
+            m_deleteTimer->stop();
+        }
+
         event->setDropAction(Qt::CopyAction);
         event->accept();
+
     } else {
         event->ignore();
     }
@@ -188,6 +295,8 @@ void canvas::dragMoveEvent(QDragMoveEvent *event)   // 拖动事件
 
 void canvas::dropEvent(QDropEvent *event) // 放下事件
 {
+    resetTrashState();
+
     // 新增：最终坐标校验
     if (isRightRegion(event->position().toPoint())) {
         event->ignore();
@@ -199,18 +308,44 @@ void canvas::dropEvent(QDropEvent *event) // 放下事件
         QDataStream dataStream(&itemData, QIODevice::ReadOnly);
         QPixmap pixmap;
         QPoint offset;
+        quintptr labelPtr;
         // 使用数据流将字节数组中的数据读入到QPixmap和QPoint变量中
-        dataStream >> pixmap >> offset;
-        // 新建标签，为其添加图片，并根据图片大小设置标签的大小
-        QLabel *newLabel = new QLabel(this);
-        newLabel->setAttribute(Qt::WA_TranslucentBackground); // 关键设置
-        newLabel->setStyleSheet("background: transparent;"); // 双重保障
-        newLabel->setPixmap(pixmap);
-        newLabel->resize(pixmap.size());
-        // 让图片移动到放下的位置，不设置的话，图片会默认显示在(0,0)点即窗口左上角
-        newLabel->move(event->position().toPoint() - offset);
-        newLabel->show();
-        newLabel->setAttribute(Qt::WA_DeleteOnClose);
+        dataStream >> pixmap >> offset >> labelPtr;
+        m_draggedLabel = reinterpret_cast<QLabel*>(labelPtr);
+        if (isInTrashArea(event->position().toPoint()) && m_draggedLabel) {
+            // 执行删除动画
+            QPropertyAnimation *anim = new QPropertyAnimation(m_draggedLabel, "geometry");
+            anim->setDuration(500);
+            anim->setStartValue(m_draggedLabel->geometry());
+            anim->setEndValue(QRect(m_trashIcon->pos(), QSize(0, 0)));
+
+            // 直接关闭原标签（关键修正）
+            connect(anim, &QPropertyAnimation::finished, [this](){
+                if(m_draggedLabel) {
+                    m_draggedLabel->close();  // 触发WA_DeleteOnClose
+                    m_draggedLabel->deleteLater();
+                    m_draggedLabel = nullptr;
+                }
+            });
+            anim->start(QAbstractAnimation::DeleteWhenStopped);
+            // 阻止原有drop逻辑执行
+            event->setDropAction(Qt::MoveAction);
+            event->accept();
+            return;
+        }
+        else
+        {
+            // 新建标签，为其添加图片，并根据图片大小设置标签的大小
+            QLabel *newLabel = new QLabel(this);
+            newLabel->setAttribute(Qt::WA_TranslucentBackground); // 关键设置
+            newLabel->setStyleSheet("background: transparent;"); // 双重保障
+            newLabel->setPixmap(pixmap);
+            newLabel->resize(pixmap.size());
+            // 让图片移动到放下的位置，不设置的话，图片会默认显示在(0,0)点即窗口左上角
+            newLabel->move(event->position().toPoint() - offset);
+            newLabel->show();
+            newLabel->setAttribute(Qt::WA_DeleteOnClose);
+        }
         // event->setDropAction(Qt::CopyAction);
         // event->accept();
         event->setDropAction(Qt::MoveAction);
@@ -223,18 +358,205 @@ void canvas::dropEvent(QDropEvent *event) // 放下事件
 // 新增：恢复光标状态
 void canvas::dragLeaveEvent(QDragLeaveEvent* event)
 {
+    resetTrashState();
     QApplication::restoreOverrideCursor();
     QWidget::dragLeaveEvent(event);
 }
 
 void canvas::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
+    updateTrashPosition();
     qDebug() << "Resize Event Triggered. New Size:" << event->size();
     // 计算右侧坐标（示例：距离右侧 150px）
     posx = this->width() - 150;
     qDebug() << this->width() << posx ;
     //随页面大小移动位置
-    label1->move(posx, 100);
-    label2->move(posx, 300);
-    label3->move(posx, 500);
+    label1->move(posx, 25);
+    label2->move(posx, 150);
+    label3->move(posx, 275);
+    label4->move(posx, 400);
+    m_button->move(posx+25, 550);
+}
+
+void canvas::handleDeleteTimeout()
+{
+    if(m_draggedLabel) {
+        startTrashAnimation(false);
+        QApplication::beep(); // 提示音效
+    }
+}
+
+// SeaDialog 实现
+SeaDialog::SeaDialog(QWidget *parent)
+    : QDialog(parent)
+{
+    setWindowTitle("Lab Search");
+    setFixedSize(500, 500);
+    //setStyleSheet("background-color: white;");
+
+    // networkManager = new QNetworkAccessManager(this);
+    setupUI();
+}
+
+SeaDialog::~SeaDialog()
+{
+}
+
+void SeaDialog::setupUI()
+{
+    m_mainLayout = new QVBoxLayout(this);
+    m_mainLayout->setContentsMargins(0, 0, 0, 0);
+    m_mainLayout->setSpacing(0);
+
+    // 顶部header区域
+    m_headerWidget = new QWidget;
+    m_headerWidget->setFixedHeight(200);
+    m_headerWidget->setStyleSheet("background-color: white;");
+
+    QVBoxLayout *headerLayout = new QVBoxLayout(m_headerWidget);
+    headerLayout->setContentsMargins(20, 40, 20, 30);
+    headerLayout->setSpacing(30);
+
+    // Logo
+    m_logoLabel = new QLabel("X-Lab Search");
+    m_logoLabel->setAlignment(Qt::AlignCenter);
+    m_logoLabel->setStyleSheet(
+        "font-size: 48px;"
+        "font-weight: 300;"
+        "color: #4285f4;"
+        "font-family: 'Arial', sans-serif;"
+        );
+
+    // Logo - 修改为Google配色
+    m_logoLabel = new QLabel("X-Lab Search");
+    m_logoLabel->setAlignment(Qt::AlignCenter);
+
+    // 方案1: 使用HTML富文本实现Google配色
+    m_logoLabel->setText(
+        "<span style='font-size: 48px; font-weight: 300; font-family: Arial, sans-serif;'>"
+        "<span style='color: #4285f4;'>X</span>"
+        "<span style='color: #ea4335;'>-</span>"
+        "<span style='color: #fbbc05;'>L</span>"
+        "<span style='color: #4285f4;'>a</span>"
+        "<span style='color: #34a853;'>b</span>"
+        "<span style='color: #ea4335;'> </span>"
+        "<span style='color: #4285f4;'>S</span>"
+        "<span style='color: #ea4335;'>e</span>"
+        "<span style='color: #fbbc05;'>a</span>"
+        "<span style='color: #34a853;'>r</span>"
+        "<span style='color: #ea4335;'>c</span>"
+        "<span style='color: #4285f4;'>h</span>"
+        "</span>"
+        );
+
+    // 移除原来的纯色样式，因为现在使用HTML
+    m_logoLabel->setStyleSheet("background: transparent;");
+
+    // 搜索区域
+    QWidget *searchWidget = new QWidget;
+    QHBoxLayout *searchLayout = new QHBoxLayout(searchWidget);
+    searchLayout->setContentsMargins(50, 0, 50, 0);
+    searchLayout->setSpacing(16);
+
+    m_searchBox = new ModernSearchBox;
+    m_searchBox->setPlaceholderText("输入搜索关键词...");
+
+    m_searchButton = new ModernSearchButton("搜索");
+    connect(m_searchButton, &QPushButton::clicked, this, &SeaDialog::onSearchButtonClicked);
+
+    searchLayout->addWidget(m_searchBox, 1);
+    searchLayout->addWidget(m_searchButton);
+
+    headerLayout->addWidget(m_logoLabel);
+    headerLayout->addWidget(searchWidget);
+
+    // 结果区域
+    m_scrollArea = new QScrollArea;
+    m_scrollArea->setWidgetResizable(true);
+    m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    m_scrollArea->setStyleSheet(
+        "QScrollArea {"
+        "border: none;"
+        "background-color: #f8f9fa;"
+        "}"
+        "QScrollBar:vertical {"
+        "background-color: transparent;"
+        "width: 12px;"
+        "}"
+        "QScrollBar::handle:vertical {"
+        "background-color: #dadce0;"
+        "border-radius: 6px;"
+        "min-height: 20px;"
+        "}"
+        "QScrollBar::handle:vertical:hover {"
+        "background-color: #bdc1c6;"
+        "}"
+        );
+
+    m_resultsContainer = new QWidget;
+    m_resultsLayout = new QVBoxLayout(m_resultsContainer);
+    m_resultsLayout->setContentsMargins(50, 20, 50, 20);
+    m_resultsLayout->setSpacing(8);
+
+    // 状态标签
+    m_statusLabel = new QLabel("X-Lab: 在这里，探索学术前沿，发掘科技宝藏");
+    m_statusLabel->setAlignment(Qt::AlignCenter);
+    m_statusLabel->setStyleSheet(
+        "font-size: 16px;"
+        "color: #5f6368;"
+        "padding: 40px;"
+        );
+    m_resultsLayout->addWidget(m_statusLabel);
+    m_resultsLayout->addStretch();
+
+    m_scrollArea->setWidget(m_resultsContainer);
+
+    m_mainLayout->addWidget(m_headerWidget);
+    m_mainLayout->addWidget(m_scrollArea, 1);
+
+    // 连接回车键搜索
+    connect(m_searchBox, &QLineEdit::returnPressed, this, &SeaDialog::onSearchButtonClicked);
+}
+
+void SeaDialog::onSearchButtonClicked()
+{
+    QString keyword = m_searchBox->text().trimmed();
+    if (keyword.isEmpty()) {
+        showError("请输入搜索关键词");
+        return;
+    }
+
+    // clearResults();
+    // showLoading(true);
+
+    // // 构建API请求
+    // QUrl url("https://serpapi.com/search");
+    // QUrlQuery params;
+    // params.addQueryItem("q", keyword);
+    // params.addQueryItem("api_key", "d0e75c248bd4209b25e41b7961260175699842f4d4730dacc3196ddb3893d83f");
+    // params.addQueryItem("engine", "google_scholar");
+    // params.addQueryItem("hl", "en");
+    // params.addQueryItem("num", "30");
+    // url.setQuery(params);
+
+    // QNetworkRequest request(url);
+    // request.setRawHeader("Accept-Charset", "utf-8");
+    // request.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
+
+    // QNetworkReply *reply = networkManager->get(request);
+    // connect(reply, &QNetworkReply::finished, [this, reply]() {
+    //     onApiResponseReceived(reply);
+    // });
+}
+
+void SeaDialog::showError(const QString &message)
+{
+    m_statusLabel->setText("❌ " + message);
+    m_statusLabel->setStyleSheet(
+        "font-size: 16px;"
+        "color: #d93025;"
+        "padding: 20px;"
+        );
+    m_statusLabel->show();
 }

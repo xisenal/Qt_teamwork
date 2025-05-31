@@ -222,129 +222,241 @@ LaTeXEditor::~LaTeXEditor()
 
 void LaTeXEditor::setupUI()
 {
-    setWindowTitle("LaTeX 编辑器");
+    setWindowTitle("XLab LaTeX 编辑器");
     setMinimumSize(1200, 800);
 
+    // Material Design 风格的样式表
     setStyleSheet(R"(
         QDialog {
-            background-color: #ffffff;
+            background-color: #fafafa;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
         }
         QLabel#titleLabel {
-            font-size: 18px;
-            font-weight: bold;
-            color: #0366d6;
-            padding: 10px;
+            font-size: 24px;
+            font-weight: 500;
+            color: #3f51b5;
+            padding: 16px;
             text-align: center;
         }
         QLineEdit {
-            border: 1px solid #d0d7de;
-            border-radius: 4px;
-            padding: 6px;
-            font-size: 11px;
-            background-color: #ffffff;
+            border: none;
+            border-bottom: 1px solid #bdbdbd;
+            border-radius: 0;
+            padding: 8px 4px;
+            font-size: 14px;
+            background-color: transparent;
+            selection-background-color: #e3f2fd;
+        }
+        QLineEdit:focus {
+            border-bottom: 2px solid #3f51b5;
         }
         QTextEdit {
-            border: 1px solid #d0d7de;
+            border: 1px solid #e0e0e0;
             border-radius: 4px;
-            padding: 8px;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 12px;
-            line-height: 1.4;
+            padding: 12px;
+            font-family: 'Consolas', 'Source Code Pro', 'Microsoft YaHei', monospace;
+            font-size: 14px;
+            line-height: 1.5;
             background-color: #ffffff;
+            selection-background-color: #e3f2fd;
         }
         QPushButton {
-            background-color: #0366d6;
+            background-color: #3f51b5;
             color: white;
             border: none;
             border-radius: 4px;
             padding: 8px 16px;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 500;
-            margin: 2px;
+            margin: 4px;
+            min-width: 88px;
+            min-height: 36px;
         }
         QPushButton:hover {
-            background-color: #0256cc;
+            background-color: #303f9f;
+        }
+        QPushButton:pressed {
+            background-color: #1a237e;
         }
         QPushButton:disabled {
-            background-color: #6c757d;
+            background-color: #bdbdbd;
+            color: #757575;
         }
         QPushButton:checked {
-            background-color: #28a745;
+            background-color: #4caf50;
         }
         QPushButton#browseBtn {
-            padding: 6px 12px;
-            font-size: 11px;
+            background-color: #f5f5f5;
+            color: #3f51b5;
+            border: 1px solid #e0e0e0;
+            padding: 8px 12px;
+        }
+        QPushButton#browseBtn:hover {
+            background-color: #e0e0e0;
         }
         QTabWidget::pane {
-            border: 1px solid #d0d7de;
+            border: 1px solid #e0e0e0;
             border-radius: 4px;
+            top: -1px;
         }
         QTabBar::tab {
-            background-color: #f6f8fa;
-            border: 1px solid #d0d7de;
-            padding: 8px 16px;
-            border-radius: 4px 4px 0 0;
+            background-color: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            padding: 10px 20px;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            margin-right: 2px;
+            font-size: 14px;
         }
         QTabBar::tab:selected {
             background-color: #ffffff;
             border-bottom-color: #ffffff;
+            color: #3f51b5;
+        }
+        QTabBar::tab:hover:!selected {
+            background-color: #e0e0e0;
+        }
+        QSplitter::handle {
+            background-color: #e0e0e0;
+            width: 1px;
+        }
+        QLabel {
+            font-size: 14px;
+            color: #424242;
+        }
+        QLabel#statusLabel {
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 4px;
         }
     )");
 
+    // 使用卡片式布局
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
+    mainLayout->setSpacing(16);
+    mainLayout->setContentsMargins(24, 24, 24, 24);
 
-    // 标题栏
-    m_titleLabel = new QLabel("X-lab Latex Editor");
+    // 标题栏 - 更现代的设计
+    QHBoxLayout* headerLayout = new QHBoxLayout();
+
+    m_titleLabel = new QLabel("XLab LaTeX 编辑器");
     m_titleLabel->setObjectName("titleLabel");
-    m_titleLabel->setAlignment(Qt::AlignCenter);
-    mainLayout->addWidget(m_titleLabel);
+    m_titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 
-    // 保存路径设置栏
+    // 状态指示器移到标题栏右侧
+    m_statusLabel = new QLabel("就绪");
+    m_statusLabel->setObjectName("statusLabel");
+    m_statusLabel->setStyleSheet("background-color: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 4px;");
+
+    headerLayout->addWidget(m_titleLabel);
+    headerLayout->addStretch();
+    headerLayout->addWidget(m_statusLabel);
+
+    mainLayout->addLayout(headerLayout);
+
+    // 工具栏 - 重新排列为两行，更清晰的分组
+    QFrame* toolbarCard = new QFrame();
+    toolbarCard->setStyleSheet("QFrame { background-color: #ffffff; border-radius: 8px; padding: 16px; border: 1px solid #e0e0e0; }");
+    QVBoxLayout* toolbarCardLayout = new QVBoxLayout(toolbarCard);
+    toolbarCardLayout->setSpacing(12);
+
+    // 保存路径设置栏 - 更清晰的布局
     QHBoxLayout* pathLayout = new QHBoxLayout();
     QLabel* pathLabel = new QLabel("默认保存路径:");
-    pathLabel->setStyleSheet("font-weight: bold; margin-right: 5px;");
+    pathLabel->setStyleSheet("font-weight: 500; margin-right: 8px;");
 
     m_defaultSavePath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/LaTeX";
     QDir().mkpath(m_defaultSavePath); // 确保目录存在
 
     m_savePathEdit = new QLineEdit(m_defaultSavePath);
-    m_savePathEdit->setMinimumWidth(300);
+    m_savePathEdit->setMinimumWidth(400);
 
-    m_browsePathBtn = new QPushButton("浏览...");
+    m_browsePathBtn = new QPushButton("浏览");
     m_browsePathBtn->setObjectName("browseBtn");
+    m_browsePathBtn->setIcon(QIcon::fromTheme("folder-open"));
 
     pathLayout->addWidget(pathLabel);
-    pathLayout->addWidget(m_savePathEdit);
+    pathLayout->addWidget(m_savePathEdit, 1);
     pathLayout->addWidget(m_browsePathBtn);
-    pathLayout->addStretch();
 
-    mainLayout->addLayout(pathLayout);
+    toolbarCardLayout->addLayout(pathLayout);
 
-    // 工具栏
-    QHBoxLayout* toolbarLayout = new QHBoxLayout();
+    // 分隔线
+    QFrame* line = new QFrame();
+    line->setFrameShape(QFrame::HLine);
+    line->setFrameShadow(QFrame::Sunken);
+    line->setStyleSheet("background-color: #e0e0e0;");
+    toolbarCardLayout->addWidget(line);
 
+    // 操作按钮 - 分为两组：文档操作和预览操作
+    QHBoxLayout* actionLayout = new QHBoxLayout();
+
+    // 文档操作组
+    QVBoxLayout* docActionsLayout = new QVBoxLayout();
+    QLabel* docActionsLabel = new QLabel("文档操作");
+    docActionsLabel->setStyleSheet("font-weight: 500; color: #757575; font-size: 12px;");
+
+    QHBoxLayout* docButtonsLayout = new QHBoxLayout();
     m_compileBtn = new QPushButton("编译 PDF");
+    m_compileBtn->setIcon(QIcon::fromTheme("document-export"));
+    m_saveBtn = new QPushButton("保存文档");
+    m_saveBtn->setIcon(QIcon::fromTheme("document-save"));
+
+    docButtonsLayout->addWidget(m_compileBtn);
+    docButtonsLayout->addWidget(m_saveBtn);
+    docButtonsLayout->addStretch();
+
+    docActionsLayout->addWidget(docActionsLabel);
+    docActionsLayout->addLayout(docButtonsLayout);
+
+    // 预览操作组
+    QVBoxLayout* previewActionsLayout = new QVBoxLayout();
+    QLabel* previewActionsLabel = new QLabel("预览控制");
+    previewActionsLabel->setStyleSheet("font-weight: 500; color: #757575; font-size: 12px;");
+
+    QHBoxLayout* previewButtonsLayout = new QHBoxLayout();
     m_previewBtn = new QPushButton("立即预览");
+    m_previewBtn->setIcon(QIcon::fromTheme("view-preview"));
     m_autoPreviewBtn = new QPushButton("自动预览: 关");
+    m_autoPreviewBtn->setIcon(QIcon::fromTheme("view-refresh"));
     m_autoPreviewBtn->setCheckable(true);
-    m_saveBtn = new QPushButton("保存");
     m_clearLogBtn = new QPushButton("清除日志");
+    m_clearLogBtn->setIcon(QIcon::fromTheme("edit-clear"));
+    m_clearLogBtn->setStyleSheet("background-color: #f5f5f5; color: #616161; border: 1px solid #e0e0e0;");
 
-    m_statusLabel = new QLabel("就绪");
-    m_statusLabel->setStyleSheet("color: #28a745; font-weight: bold; margin-left: 10px;");
+    previewButtonsLayout->addWidget(m_previewBtn);
+    previewButtonsLayout->addWidget(m_autoPreviewBtn);
+    previewButtonsLayout->addWidget(m_clearLogBtn);
+    previewButtonsLayout->addStretch();
 
-    toolbarLayout->addWidget(m_compileBtn);
-    toolbarLayout->addWidget(m_previewBtn);
-    toolbarLayout->addWidget(m_autoPreviewBtn);
-    toolbarLayout->addWidget(m_saveBtn);
-    toolbarLayout->addWidget(m_clearLogBtn);
-    toolbarLayout->addWidget(m_statusLabel);
-    toolbarLayout->addStretch();
+    previewActionsLayout->addWidget(previewActionsLabel);
+    previewActionsLayout->addLayout(previewButtonsLayout);
 
-    // 主编辑区域
+    // 将两组操作添加到主操作布局
+    actionLayout->addLayout(docActionsLayout);
+    actionLayout->addSpacing(24);  // 增加组之间的间距
+    actionLayout->addLayout(previewActionsLayout);
+
+    toolbarCardLayout->addLayout(actionLayout);
+    mainLayout->addWidget(toolbarCard);
+
+    // 主编辑区域 - 使用卡片式设计
+    QFrame* editorCard = new QFrame();
+    editorCard->setStyleSheet("QFrame { background-color: #ffffff; border-radius: 8px; padding: 16px; border: 1px solid #e0e0e0; }");
+    QVBoxLayout* editorCardLayout = new QVBoxLayout(editorCard);
+
     QSplitter* splitter = new QSplitter(Qt::Horizontal);
+    splitter->setHandleWidth(2);
+    splitter->setChildrenCollapsible(false);
 
-    // 左侧编辑器
+    // 左侧编辑器 - 添加标题
+    QWidget* editorContainer = new QWidget();
+    QVBoxLayout* editorLayout = new QVBoxLayout(editorContainer);
+    editorLayout->setContentsMargins(0, 0, 0, 0);
+
+    QLabel* editorLabel = new QLabel("LaTeX 源代码");
+    editorLabel->setStyleSheet("font-weight: 500; color: #3f51b5; font-size: 14px; margin-bottom: 8px;");
+
     m_editor = new QTextEdit();
     m_editor->setPlaceholderText(R"(% LaTeX 文档示例
 \documentclass[12pt]{article}
@@ -388,8 +500,19 @@ LaTeX 能够产生高质量的文档输出。
 
 \end{document})");
 
-    // 右侧面板（选项卡）
+    editorLayout->addWidget(editorLabel);
+    editorLayout->addWidget(m_editor);
+
+    // 右侧面板（选项卡）- 添加标题
+    QWidget* previewContainer = new QWidget();
+    QVBoxLayout* previewLayout = new QVBoxLayout(previewContainer);
+    previewLayout->setContentsMargins(0, 0, 0, 0);
+
+    QLabel* previewLabel = new QLabel("预览与输出");
+    previewLabel->setStyleSheet("font-weight: 500; color: #3f51b5; font-size: 14px; margin-bottom: 8px;");
+
     m_rightPanel = new QTabWidget();
+    m_rightPanel->setDocumentMode(true);
 
     // 预览选项卡
     m_preview = new QTextEdit();
@@ -400,17 +523,21 @@ LaTeX 能够产生高质量的文档输出。
     m_outputLog = new QTextEdit();
     m_outputLog->setReadOnly(true);
     m_outputLog->setPlaceholderText("编译输出和错误信息将在此显示...");
-    m_outputLog->setStyleSheet(m_outputLog->styleSheet() + "font-family: 'Consolas', 'Courier New', monospace; font-size: 10px;");
+    m_outputLog->setStyleSheet(m_outputLog->styleSheet() + "font-family: 'Consolas', 'Source Code Pro', 'Microsoft YaHei', monospace; font-size: 12px;");
 
     m_rightPanel->addTab(m_preview, "预览");
     m_rightPanel->addTab(m_outputLog, "编译日志");
 
-    splitter->addWidget(m_editor);
-    splitter->addWidget(m_rightPanel);
+    previewLayout->addWidget(previewLabel);
+    previewLayout->addWidget(m_rightPanel);
+
+    // 将编辑器和预览面板添加到分割器
+    splitter->addWidget(editorContainer);
+    splitter->addWidget(previewContainer);
     splitter->setSizes({600, 600});
 
-    mainLayout->addLayout(toolbarLayout);
-    mainLayout->addWidget(splitter);
+    editorCardLayout->addWidget(splitter);
+    mainLayout->addWidget(editorCard, 1);  // 设置拉伸因子，使编辑区域占据更多空间
 
     // 连接信号槽
     connect(m_compileBtn, &QPushButton::clicked, this, &LaTeXEditor::onCompileClicked);
@@ -449,10 +576,16 @@ void LaTeXEditor::onAutoPreviewToggled(bool enabled)
     m_autoPreviewEnabled = enabled;
     if (enabled) {
         m_autoPreviewBtn->setText("自动预览: 开");
+        m_autoPreviewBtn->setStyleSheet("background-color: #4caf50; color: white; border: none; border-radius: 4px; padding: 8px 16px; font-size: 14px; font-weight: 500; margin: 4px; min-width: 88px; min-height: 36px;");
         onAutoPreview(); // 立即预览一次
+        m_statusLabel->setText("自动预览已启用");
+        m_statusLabel->setStyleSheet("background-color: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 4px;");
     } else {
         m_autoPreviewBtn->setText("自动预览: 关");
+        m_autoPreviewBtn->setStyleSheet("background-color: #3f51b5; color: white; border: none; border-radius: 4px; padding: 8px 16px; font-size: 14px; font-weight: 500; margin: 4px; min-width: 88px; min-height: 36px;");
         m_previewTimer->stop();
+        m_statusLabel->setText("自动预览已关闭");
+        m_statusLabel->setStyleSheet("background-color: #e3f2fd; color: #1565c0; padding: 4px 8px; border-radius: 4px;");
     }
 }
 
@@ -632,10 +765,17 @@ void LaTeXEditor::onPreviewClicked()
 {
     QString content = m_editor->toPlainText();
     if (content.trimmed().isEmpty()) {
+        m_statusLabel->setText("无内容可预览");
+        m_statusLabel->setStyleSheet("background-color: #fff8e1; color: #f57f17; padding: 4px 8px; border-radius: 4px;");
         return;
     }
 
     generateHTMLPreview(content);
+    m_statusLabel->setText("预览已更新");
+    m_statusLabel->setStyleSheet("background-color: #e3f2fd; color: #1565c0; padding: 4px 8px; border-radius: 4px;");
+
+    // 切换到预览标签页
+    m_rightPanel->setCurrentIndex(0);
 }
 
 // 保持原有的编译相关方法不变
@@ -656,7 +796,7 @@ bool LaTeXEditor::compileLaTeX(const QString& content)
 
     // 设置状态
     m_statusLabel->setText("编译中...");
-    m_statusLabel->setStyleSheet("color: #ffc107; font-weight: bold; margin-left: 10px;");
+    m_statusLabel->setStyleSheet("background-color: #fff8e1; color: #f57f17; padding: 4px 8px; border-radius: 4px;");
     m_compileBtn->setEnabled(false);
 
     // 创建进程
@@ -693,7 +833,7 @@ void LaTeXEditor::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatu
 
     if (exitStatus == QProcess::CrashExit) {
         m_statusLabel->setText("编译崩溃");
-        m_statusLabel->setStyleSheet("color: #dc3545; font-weight: bold; margin-left: 10px;");
+        m_statusLabel->setStyleSheet("background-color: #ffebee; color: #c62828; padding: 4px 8px; border-radius: 4px;");
         m_outputLog->append("编译进程崩溃！");
         return;
     }
@@ -712,7 +852,7 @@ void LaTeXEditor::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatu
 
     if (exitCode == 0) {
         m_statusLabel->setText("编译成功");
-        m_statusLabel->setStyleSheet("color: #28a745; font-weight: bold; margin-left: 10px;");
+        m_statusLabel->setStyleSheet("background-color: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 4px;");
 
         // 检查是否生成了 PDF 文件
         QString pdfFile = m_tempDir + "/document.pdf";
@@ -725,7 +865,7 @@ void LaTeXEditor::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatu
         }
     } else {
         m_statusLabel->setText("编译失败");
-        m_statusLabel->setStyleSheet("color: #dc3545; font-weight: bold; margin-left: 10px;");
+        m_statusLabel->setStyleSheet("background-color: #ffebee; color: #c62828; padding: 4px 8px; border-radius: 4px;");
         m_preview->setText("编译失败，请查看编译日志获取详细错误信息。");
     }
 
@@ -737,7 +877,7 @@ void LaTeXEditor::onProcessError(QProcess::ProcessError error)
 {
     m_compileBtn->setEnabled(true);
     m_statusLabel->setText("编译错误");
-    m_statusLabel->setStyleSheet("color: #dc3545; font-weight: bold; margin-left: 10px;");
+    m_statusLabel->setStyleSheet("background-color: #ffebee; color: #c62828; padding: 4px 8px; border-radius: 4px;");
 
     QString errorString;
     switch (error) {
@@ -792,9 +932,11 @@ void LaTeXEditor::onSaveClicked()
             file.close();
             m_outputLog->append("文件已保存: " + fileName);
             m_statusLabel->setText("已保存");
-            m_statusLabel->setStyleSheet("color: #28a745; font-weight: bold; margin-left: 10px;");
+            m_statusLabel->setStyleSheet("background-color: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 4px;");
         } else {
             m_outputLog->append("错误：无法保存文件 " + fileName);
+            m_statusLabel->setText("保存失败");
+            m_statusLabel->setStyleSheet("background-color: #ffebee; color: #c62828; padding: 4px 8px; border-radius: 4px;");
         }
     }
 }

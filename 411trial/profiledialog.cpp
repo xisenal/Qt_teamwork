@@ -293,8 +293,8 @@ void ProfileDialog::setupStyles()
 void ProfileDialog::loadUserInfo()
 {
     // 这里可以从配置文件或数据库加载用户信息
-    nicknameEdit->setText("jammming");
-    emailEdit->setText("3922909893@qq.com");
+    nicknameEdit->setText("jamming");
+    emailEdit->setText("2400012908@stu.pku.edu.cn");
     phoneEdit->setText("188********");
 
     // 加载头像
