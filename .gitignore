@@ -66,3 +66,6 @@ build/
 
 # IDE/编辑器缓存（如 Qt Creator 的 clangd 索引）
 .qtc_clangd/
+
+
+*.mp4
