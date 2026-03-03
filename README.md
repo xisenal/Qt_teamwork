@@ -5,7 +5,7 @@
 [![C++](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://isocpp.org/)
 
 **欢迎来到X-Lab! 拒绝成为牛马，领先世界一万年[doge]**
-<img width="1280" height="720" alt="image_973349899564201" src="https://github.com/user-attachments/assets/79f71fc5-abf2-454a-8125-bfcdfad1d81c" />
+<img width="1020" height="488" alt="aac228cc01ec0380945c984c68b175a1" src="https://github.com/user-attachments/assets/9ab5118e-9c66-4308-85a1-335d82e1c3bf" />
 
 
 > **X-Lab** 是一个为所有科研工作者、热爱/向往科研的人打造的“科研百宝箱”平台。它集成了多学科常用工具、虚拟实验室管理、文献检索及协同办公功能，旨在通过一体化的平台提升科研效率，优化实验体验。
@@ -64,15 +64,15 @@
    cd Qt_teamwork
    ```
 2. **配置项目**
-使用 Qt Creator 打开 X-Lab.pro 文件。
-在 config.h 或相应配置文件中填入您的 API Key 和 SMTP 凭证。
-构建与运行:
+    使用 Qt Creator 打开 X-Lab.pro 文件。
+    在 config.h 或相应配置文件中填入您的 API Key 和 SMTP 凭证。
+    构建与运行:
 
-```bash
-qmake
-make
-./X-Lab executable
-```
+    ```bash
+    qmake
+    make
+    ./X-Lab executable
+    ```
 (注：具体构建命令可能因操作系统和编译器而异)
 
 
