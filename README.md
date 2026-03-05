@@ -4,7 +4,7 @@
 [![Qt](https://img.shields.io/badge/Qt-6.9.0-green.svg)](https://www.qt.io/)
 [![C++](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://isocpp.org/)
 
-**欢迎来到X-Lab! 拒绝成为牛马，领先世界一万年[doge]**
+**欢迎来到X-Lab! 摆脱焦虑内耗，领先世界一万年[doge]**
 <img width="1020" height="488" alt="aac228cc01ec0380945c984c68b175a1" src="https://github.com/user-attachments/assets/9ab5118e-9c66-4308-85a1-335d82e1c3bf" />
 
 
